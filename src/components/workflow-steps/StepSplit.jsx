@@ -207,8 +207,22 @@ const StepSplit = ({ visible = true }) => {
   };
 
   // 当 storyboard 变化时，同步 editableShots 和 editableRefPrompt（历史记录加载）
+  // 当 storyboard 为 null 时（新建/重置），清空本地状态
+  const prevStoryboardRef = useRef(null);
   useEffect(() => {
-    if (storyboard?.shots && storyboard.shots.length > 0) {
+    // 检测从有值变为 null（新建/重置操作）
+    if (prevStoryboardRef.current && !storyboard) {
+      setEditableShots([]);
+      setEditableRefPrompt('');
+      setRefImages([]);
+      setImageFile(null);
+      setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      setError(null);
+    } else if (storyboard?.shots && storyboard.shots.length > 0) {
+      // 有任务：加载分镜数据
       setEditableShots(storyboard.shots.map(shot => ({
         shotNumber: shot.shot_number,
         angleType: shot.angle_type,
@@ -216,8 +230,10 @@ const StepSplit = ({ visible = true }) => {
       })));
       setEditableRefPrompt(storyboard.reference_control_prompt || '');
     }
+    // 更新 ref
+    prevStoryboardRef.current = storyboard;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId]);
+  }, [storyboard]);
 
   // 生成宫格图
   const handleGenerateGrid = async () => {

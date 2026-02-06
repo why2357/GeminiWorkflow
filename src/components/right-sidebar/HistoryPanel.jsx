@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWorkflowStore, WorkflowSteps } from '../../store/useWorkflowStore';
 import Button from '../common/Button';
-import { getHistory, getTaskGridImage, restoreTaskFromHistory } from '../../services/api';
+import { getHistory, getTaskGridImage, getTaskSplitImages, restoreTaskFromHistory } from '../../services/api';
 import Loading from '../common/Loading';
 import './HistoryPanel.css';
 
@@ -21,7 +21,8 @@ const HistoryPanel = () => {
     setStoryboard,
     setTaskId,
     setFullScript,
-    setCurrentStep
+    setCurrentStep,
+    setSplitsImages
   } = useWorkflowStore();
 
   // 从 API 加载历史记录
@@ -174,7 +175,18 @@ const HistoryPanel = () => {
       setFullScript(session.script || '');
       setCurrentStep(WorkflowSteps.SPLIT);
 
-      // 不自动加载 splits 数据，让用户手动点击"生成宫格图"后再显示
+      // 如果历史任务有分割图片，自动加载
+      if (session.hasSplits) {
+        try {
+          const splitsData = await getTaskSplitImages(session.taskId);
+          if (splitsData?.split_images) {
+            setSplitsImages(splitsData.split_images);
+          }
+        } catch (err) {
+          // 静默失败，不影响主流程
+          console.warn('加载分割图片失败:', err);
+        }
+      }
     }
   };
 

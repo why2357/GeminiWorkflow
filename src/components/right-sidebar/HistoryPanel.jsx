@@ -169,13 +169,7 @@ const HistoryPanel = () => {
         }
       }
 
-      // 设置基本信息并跳转到 SPLIT 步骤
-      setTaskId(session.taskId);
-      setStoryboard(storyboardToUse);
-      setFullScript(session.script || '');
-      setCurrentStep(WorkflowSteps.SPLIT);
-
-      // 如果历史任务有分割图片，自动加载
+      // 如果历史任务有分割图片，先加载再跳转
       if (session.hasSplits) {
         try {
           const splitsData = await getTaskSplitImages(session.taskId);
@@ -187,6 +181,12 @@ const HistoryPanel = () => {
           console.warn('加载分割图片失败:', err);
         }
       }
+
+      // 设置基本信息并跳转到 SPLIT 步骤
+      setTaskId(session.taskId);
+      setStoryboard(storyboardToUse);
+      setFullScript(session.script || '');
+      setCurrentStep(WorkflowSteps.SPLIT);
     }
   };
 

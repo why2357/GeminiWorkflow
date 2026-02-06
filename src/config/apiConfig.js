@@ -4,7 +4,8 @@
 
 // API 基础地址
 // export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.28.104.25:8025';
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.28.104.25:8025';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.28.104.54:8025';
+// export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.28.104.25:8025';
 // API 端点
 export const API_ENDPOINTS = {
   HEALTH: '/healthz',

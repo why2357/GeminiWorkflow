@@ -436,7 +436,7 @@ const StepSplit = ({ visible = true }) => {
                 分镜描述（可编辑）({editableShots.length} 个分镜)
               </div>
               <div style={{
-                maxHeight: '300px',
+                maxHeight: '50vh',
                 overflowY: 'auto',
                 backgroundColor: 'var(--bg-subtle)',
                 padding: '12px',
@@ -450,7 +450,7 @@ const StepSplit = ({ visible = true }) => {
                     borderBottom: index < editableShots.length - 1 ? '1px solid var(--border)' : 'none'
                   }}>
                     <div style={{
-                      fontSize: '0.85rem',
+                      fontSize: '1.1rem',
                       fontWeight: 600,
                       color: 'var(--text-sub)',
                       marginBottom: '4px',
@@ -478,9 +478,10 @@ const StepSplit = ({ visible = true }) => {
                         padding: '8px',
                         border: '1px solid var(--border)',
                         borderRadius: 'var(--radius-xs)',
-                        fontSize: '0.85rem',
+                        fontSize: '1rem',
                         fontFamily: 'inherit',
-                        resize: 'vertical'
+                        resize: 'vertical',
+                        fontWeight:'450'
                       }}
                     />
                   </div>

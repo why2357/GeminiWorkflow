@@ -77,7 +77,7 @@ const useImageSlicing = () => {
           setIsProcessing(false);
           resolve(slicedTiles);
         } catch (error) {
-          console.error('Image slicing failed:', error);
+          // console.error('Image slicing failed:', error);
           setIsProcessing(false);
           reject(error);
         }

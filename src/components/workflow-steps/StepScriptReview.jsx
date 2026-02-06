@@ -59,7 +59,7 @@ const StepScriptReview = ({ visible = true }) => {
 
   const handleGenerateImages = () => {
     setGeneratedScripts(localScripts);
-    setCurrentStep(WorkflowSteps.WORKSPACE);
+    setCurrentStep(WorkflowSteps.RESULTS);
   };
 
   return (

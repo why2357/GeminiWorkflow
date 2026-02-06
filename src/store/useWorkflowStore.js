@@ -201,9 +201,9 @@ const useWorkflowStore = create((set, get) => ({
 
   // 从历史记录恢复任务到工作流
   restoreTask: (task) => set((state) => {
-    console.log('[Store restoreTask] 接收到的任务数据:', task);
-    console.log('[Store restoreTask] task.storyboard:', task.storyboard);
-    console.log('[Store restoreTask] task.storyboard.shots:', task.storyboard?.shots);
+    // console.log('[Store restoreTask] 接收到的任务数据:', task);
+    // console.log('[Store restoreTask] task.storyboard:', task.storyboard);
+    // console.log('[Store restoreTask] task.storyboard.shots:', task.storyboard?.shots);
 
     const newState = {
       taskId: task.task_id,
@@ -220,13 +220,13 @@ const useWorkflowStore = create((set, get) => ({
       generatedScripts: [],
     };
 
-    console.log('[Store restoreTask] 即将设置的新状态:', newState);
-    console.log('[Store restoreTask] 跳转到工作台步骤，准备显示宫格图');
+    // console.log('[Store restoreTask] 即将设置的新状态:', newState);
+    // console.log('[Store restoreTask] 跳转到工作台步骤，准备显示宫格图');
     set(newState);
     triggerAutoSave({ ...state, ...newState });
 
     // 验证设置是否成功
-    console.log('[Store restoreTask] 设置后的 store 状态:', get());
+    // console.log('[Store restoreTask] 设置后的 store 状态:', get());
 
     return newState;
   }),

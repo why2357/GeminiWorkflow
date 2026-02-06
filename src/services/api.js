@@ -4,6 +4,7 @@
 
 import { API_BASE_URL, API_ENDPOINTS, API_TIMEOUT, MAX_RETRIES, RETRY_DELAY } from '../config/apiConfig';
 import { getOrCreateClientId } from '../utils/clientId';
+import { imageCache } from '../utils/imageCache';
 
 /**
  * 延迟函数
@@ -124,6 +125,7 @@ export async function generateShots(script, imageFile, taskId = null) {
  *   - shots: 分镜数组，每个包含 shot_number, angle_type, prompt_text
  *   - reference_control_prompt: 参考控制提示
  * @param {string} taskId - 任务 ID（必须与步骤 1 返回的 task_id 一致）
+ * @param {Array<File>} refImages - 参考图文件数组（可选）
  *
  * @returns {Promise<object>} 返回对象包含：
  *   - client_id: 客户端 ID
@@ -134,19 +136,23 @@ export async function generateShots(script, imageFile, taskId = null) {
  *   - success: 是否成功（基于 grid_image 是否存在）
  *
  * @example
- * const response = await generateGrid(storyboard, 'task_123');
+ * const response = await generateGrid(storyboard, 'task_123', [file1, file2]);
  * if (response.success) {
  *   console.log(response.grid_image); // "data:image/png;base64,iVBORw0KG..."
  * }
  */
-export async function generateGrid(storyboard, taskId) {
+export async function generateGrid(storyboard, taskId, refImages = []) {
   const clientId = getOrCreateClientId();
 
   // 构建 multipart/form-data 请求
-  const formData = buildFormData({
-    client_id: clientId,
-    task_id: taskId,
-    storyboard: JSON.stringify(storyboard),  // 将对象序列化为 JSON 字符串
+  const formData = new FormData();
+  formData.append('client_id', clientId);
+  formData.append('task_id', taskId);
+  formData.append('storyboard', JSON.stringify(storyboard));  // 将对象序列化为 JSON 字符串
+
+  // 添加参考图
+  refImages.forEach(file => {
+    formData.append('ref_images', file);
   });
 
   const url = `${API_BASE_URL}${API_ENDPOINTS.GENERATE_GRID}`;
@@ -178,29 +184,119 @@ export async function getHistory(clientId = null) {
 }
 
 /**
- * 按需获取指定任务的宫格图
- * @param {string} taskId - 任务 ID
- * @param {string} clientId - 客户端 ID（可选）
- * @returns {Promise<object>} 返回对象的 grid_image 字段包含宫格图 data URL
+ * 获取历史记录元数据（轻量级新鲜度检查）
+ * 仅返回各任务的 updated_at，用于与本地缓存比较
+ * @param {string} clientId - 客户端 ID（可选，默认使用当前客户端）
+ * @returns {Promise<object>} 返回格式: { client_id, updated_at, tasks: { taskId: updated_at, ... } }
  */
-export async function getTaskGridImage(taskId, clientId = null) {
+export async function getHistoryMeta(clientId = null) {
   const finalClientId = clientId || getOrCreateClientId();
-  const url = `${API_BASE_URL}/api/history/${encodeURIComponent(finalClientId)}/${encodeURIComponent(taskId)}/grid`;
+  const url = `${API_BASE_URL}/api/history/${encodeURIComponent(finalClientId)}/meta`;
 
+  // console.log('[getHistoryMeta] 获取历史记录元数据');
   return fetchWithRetry(url, { method: 'GET' });
 }
 
 /**
- * 按需获取指定任务的 25 张分镜图
+ * 按需获取指定任务的宫格图（带缓存）
  * @param {string} taskId - 任务 ID
  * @param {string} clientId - 客户端 ID（可选）
- * @returns {Promise<object>} 返回对象的 split_images 字段包含 25 张图片 data URL 数组
+ * @returns {Promise<object>} 返回对象的 task.grid_image 字段包含宫格图 data URL
+ */
+export async function getTaskGridImage(taskId, clientId = null) {
+  const finalClientId = clientId || getOrCreateClientId();
+  const cacheKey = `grid:${finalClientId}:${taskId}`;
+
+  // 1. 尝试从缓存读取
+  const cached = await imageCache.getImage('grid', finalClientId, taskId);
+  if (cached) {
+    // console.log(`[getTaskGridImage] 使用缓存: ${cacheKey}`);
+    return {
+      ...cached,
+      _fromCache: true
+    };
+  }
+
+  // 2. 缓存未命中，调用 API
+  // console.log(`[getTaskGridImage] 调用 API: ${cacheKey}`);
+  const url = `${API_BASE_URL}/api/history/${encodeURIComponent(finalClientId)}/${encodeURIComponent(taskId)}/grid`;
+  const response = await fetchWithRetry(url, { method: 'GET' });
+
+  // 后端返回格式: { client_id, task: { task_id, updated_at, grid_image } }
+  const task = response.task || {};
+  const gridImage = task.grid_image || response.grid_image;
+
+  const result = {
+    client_id: response.client_id || finalClientId,
+    task_id: task.task_id || taskId,
+    grid_image: gridImage
+  };
+
+  // 3. 保存到缓存
+  await imageCache.saveImage(
+    'grid',
+    finalClientId,
+    taskId,
+    result,
+    task.updated_at  // 使用 updated_at 作为版本标识
+  );
+
+  return {
+    ...result,
+    _fromCache: false
+  };
+}
+
+/**
+ * 按需获取指定任务的 25 张分镜图（带缓存）
+ * @param {string} taskId - 任务 ID
+ * @param {string} clientId - 客户端 ID（可选）
+ * @returns {Promise<object>} 返回对象的 task.split_images 字段包含 25 张图片 data URL 数组
  */
 export async function getTaskSplitImages(taskId, clientId = null) {
   const finalClientId = clientId || getOrCreateClientId();
-  const url = `${API_BASE_URL}/api/history/${encodeURIComponent(finalClientId)}/${encodeURIComponent(taskId)}/splits`;
+  const cacheKey = `splits:${finalClientId}:${taskId}`;
 
-  return fetchWithRetry(url, { method: 'GET' });
+  // 1. 尝试从缓存读取
+  const cached = await imageCache.getImage('splits', finalClientId, taskId);
+  if (cached) {
+    // console.log(`[getTaskSplitImages] 使用缓存: ${cacheKey}`);
+    return {
+      ...cached,
+      _fromCache: true
+    };
+  }
+
+  // 2. 缓存未命中，调用 API
+  // console.log(`[getTaskSplitImages] 调用 API: ${cacheKey}`);
+  const url = `${API_BASE_URL}/api/history/${encodeURIComponent(finalClientId)}/${encodeURIComponent(taskId)}/splits`;
+  const response = await fetchWithRetry(url, { method: 'GET' });
+
+  // 后端返回格式: { client_id, task: { task_id, updated_at, split_images } }
+  const task = response.task || {};
+  const splitImages = task.split_images || response.split_images || [];
+
+  const result = {
+    client_id: response.client_id || finalClientId,
+    task_id: task.task_id || taskId,
+    split_images: splitImages,
+    storyboard: task.storyboard || response.storyboard,
+    script: task.script || response.script
+  };
+
+  // 3. 保存到缓存
+  await imageCache.saveImage(
+    'splits',
+    finalClientId,
+    taskId,
+    result,
+    task.updated_at  // 使用 updated_at 作为版本标识
+  );
+
+  return {
+    ...result,
+    _fromCache: false
+  };
 }
 
 /**
@@ -210,23 +306,23 @@ export async function getTaskSplitImages(taskId, clientId = null) {
  */
 export async function restoreTaskFromHistory(taskId, clientId = null) {
   const finalClientId = clientId || getOrCreateClientId();
-  console.log('[API restoreTaskFromHistory] 开始查找任务, taskId:', taskId, 'clientId:', finalClientId);
+  // console.log('[API restoreTaskFromHistory] 开始查找任务, taskId:', taskId, 'clientId:', finalClientId);
 
   const history = await getHistory(finalClientId);
-  console.log('[API restoreTaskFromHistory] getHistory 返回:', history);
+  // console.log('[API restoreTaskFromHistory] getHistory 返回:', history);
 
   if (!history.history || !Array.isArray(history.history)) {
-    console.warn('[API restoreTaskFromHistory] history.history 不存在或不是数组');
+    // console.warn('[API restoreTaskFromHistory] history.history 不存在或不是数组');
     return null;
   }
 
-  console.log('[API restoreTaskFromHistory] 历史记录数组长度:', history.history.length);
+  // console.log('[API restoreTaskFromHistory] 历史记录数组长度:', history.history.length);
 
   // 查找指定任务
   const task = history.history.find(t => t.task_id === taskId);
-  console.log('[API restoreTaskFromHistory] 找到的任务:', task);
-  console.log('[API restoreTaskFromHistory] task.storyboard:', task?.storyboard);
-  console.log('[API restoreTaskFromHistory] task.storyboard.shots:', task?.storyboard?.shots);
+  // console.log('[API restoreTaskFromHistory] 找到的任务:', task);
+  // console.log('[API restoreTaskFromHistory] task.storyboard:', task?.storyboard);
+  // console.log('[API restoreTaskFromHistory] task.storyboard.shots:', task?.storyboard?.shots);
 
   return task || null;
 }

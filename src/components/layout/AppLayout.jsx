@@ -1,13 +1,17 @@
 import React from 'react';
+import { DndContext } from '@dnd-kit/core';
 import './AppLayout.css';
 
 const AppLayout = ({
   leftSidebar,
   rightSidebar,
-  children  // 中间区域内容
+  children,  // 中间区域内容
+  onDragEnd, // 拖拽结束回调
+  sensors    // 拖拽传感器配置
 }) => {
   return (
-    <div className="app-layout">
+    <DndContext sensors={sensors} onDragEnd={onDragEnd}>
+      <div className="app-layout">
       {/* 左侧边栏 */}
       {leftSidebar && (
         <aside className="sidebar sidebar-left">
@@ -26,7 +30,8 @@ const AppLayout = ({
           {rightSidebar}
         </aside>
       )}
-    </div>
+      </div>
+    </DndContext>
   );
 };
 

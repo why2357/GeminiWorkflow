@@ -1,16 +1,5 @@
 
 
-项目调用的 API 接口
-API Base URL: http://172.28.104.25:8025
-
-接口	方法	端点	功能	调用位置
-健康检查	GET	/healthz	检查服务健康状态	api.js (healthCheck)
-API 信息	GET	/	获取 API 基本信息	api.js (getApiInfo)
-生成分镜	POST	/api/generate-shots	根据剧本+图片生成 25 个分镜描述	StepSplit.jsx
-生成宫格图	POST	/api/generate-grid	生成 5×5 宫格图并切割成 25 张图片	api.js (generateGrid)
-获取历史	GET	/api/history/{client_id}	获取轻量级历史记录列表（不含图片）	HistoryPanel.jsx
-获取宫格图	GET	/api/history/{client_id}/{task_id}/grid	按需获取指定任务的宫格图	HistoryPanel.jsx
-获取分镜图	GET	/api/history/{client_id}/{task_id}/splits	按需获取指定任务的 25 张分镜图
 
 
 

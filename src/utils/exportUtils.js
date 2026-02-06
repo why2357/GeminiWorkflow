@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import { saveAs } from 'jszip';
+import { saveAs } from 'file-saver';
 
 /**
  * 将 Data URL 转换为 Blob
@@ -148,7 +148,7 @@ export const exportProject = async (state) => {
         const filename = `${String(i + 1).padStart(3, '0')}-${item.badge.replace(/\s+/g, '_')}.${ext}`;
         imagesFolder.file(filename, blob);
       } catch (error) {
-        console.error(`Failed to process image ${item.instanceId}:`, error);
+        // console.error(`Failed to process image ${item.instanceId}:`, error);
       }
     }
   }
@@ -162,7 +162,7 @@ export const exportProject = async (state) => {
     saveAs(content, zipFilename);
     return { success: true, filename: zipFilename };
   } catch (error) {
-    console.error('Export failed:', error);
+    // console.error('Export failed:', error);
     return { success: false, error: error.message };
   }
 };

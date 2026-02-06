@@ -12,6 +12,9 @@ export const API_ENDPOINTS = {
   GENERATE_SHOTS: '/api/generate-shots',
   GENERATE_GRID: '/api/generate-grid',
   GET_HISTORY: '/api/history',
+  GET_HISTORY_META: '/api/history/:client_id/meta',      // 轻量级新鲜度检查
+  GET_HISTORY_GRID: '/api/history/:client_id/:task_id/grid',  // 获取宫格图
+  GET_HISTORY_SPLITS: '/api/history/:client_id/:task_id/splits', // 获取分割图片
 };
 
 // 请求超时时间（毫秒）

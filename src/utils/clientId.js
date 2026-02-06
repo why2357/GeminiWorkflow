@@ -39,7 +39,7 @@ export function getOrCreateClientId() {
     return clientId;
   } catch (error) {
     // localStorage 不可用时直接返回新 ID
-    console.warn('localStorage unavailable, generating temporary client_id');
+    // console.warn('localStorage unavailable, generating temporary client_id');
     return generateClientId();
   }
 }
@@ -52,7 +52,7 @@ export function resetClientId() {
   try {
     localStorage.removeItem(CLIENT_ID_KEY);
   } catch (error) {
-    console.warn('Failed to reset client_id');
+    // console.warn('Failed to reset client_id');
   }
 }
 

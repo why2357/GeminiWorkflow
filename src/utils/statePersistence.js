@@ -35,7 +35,7 @@ export const saveToLocalStorage = (key, data) => {
     localStorage.setItem(key, serialized);
     return true;
   } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+    // console.error('Failed to save to localStorage:', error);
     return false;
   }
 };
@@ -51,7 +51,7 @@ export const loadFromLocalStorage = (key, defaultValue = null) => {
     }
     return JSON.parse(serialized);
   } catch (error) {
-    console.error('Failed to load from localStorage:', error);
+    // console.error('Failed to load from localStorage:', error);
     return defaultValue;
   }
 };
@@ -64,7 +64,7 @@ export const removeFromLocalStorage = (key) => {
     localStorage.removeItem(key);
     return true;
   } catch (error) {
-    console.error('Failed to remove from localStorage:', error);
+    // console.error('Failed to remove from localStorage:', error);
     return false;
   }
 };

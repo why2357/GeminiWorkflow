@@ -1,19 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCenter
+  useDroppable
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import Button from '../common/Button';
+import { exportProject } from '../../utils/exportUtils';
 import './SelectedListPanel.css';
 
 // 可拖拽的已选项组件
@@ -58,30 +54,15 @@ const SelectedListPanel = () => {
     globalSelectedList,
     clearSelectedList,
     reorderSelectedList,
-    removeFromSelectedList
+    removeFromSelectedList,
+    fullScript,
+    splitScenes,
+    generatedScripts,
+    currentStep
   } = useWorkflowStore();
 
+  const [exporting, setExporting] = useState(false);
   const count = globalSelectedList.length;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // 需要拖动 8px 才开始拖动
-      },
-    })
-  );
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = globalSelectedList.findIndex((item) => item.instanceId === active.id);
-      const newIndex = globalSelectedList.findIndex((item) => item.instanceId === over.id);
-
-      const newList = arrayMove(globalSelectedList, oldIndex, newIndex);
-      reorderSelectedList(newList);
-    }
-  };
 
   const handleRemove = (instanceId) => {
     removeFromSelectedList(instanceId);
@@ -94,14 +75,42 @@ const SelectedListPanel = () => {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (count === 0) {
       alert('请先从中间工作区选择分镜图片');
       return;
     }
-    // TODO: 实现导出功能（阶段 5）
-    alert(`导出 ${count} 个已选分镜（功能待实现）`);
+
+    setExporting(true);
+    try {
+      const state = {
+        fullScript,
+        splitScenes,
+        generatedScripts,
+        globalSelectedList,
+        currentStep
+      };
+
+      const result = await exportProject(state);
+
+      if (result.success) {
+        // 导出成功
+        // alert(`导出成功: ${result.filename}`);
+      } else {
+        alert(`导出失败: ${result.error || '未知错误'}`);
+      }
+    } catch (error) {
+      alert(`导出出错: ${error.message}`);
+    } finally {
+      setExporting(false);
+    }
   };
+
+  // 设置 Droppable 区域
+  const { setNodeRef } = useDroppable({
+    id: 'selected-list-panel',
+    disabled: false
+  });
 
   return (
     <div className="selected-list-panel">
@@ -123,33 +132,27 @@ const SelectedListPanel = () => {
       </div>
 
       {/* 内容区 */}
-      <div className="sidebar-content">
+      <div className="sidebar-content" ref={setNodeRef}>
         {count === 0 ? (
           <div className="sidebar-empty">
-            从中间点击图片<br/>添加到此处<br/><br/>可拖拽排序
+            从中间拖拽图片<br/>添加到此处<br/><br/>可拖拽排序
           </div>
         ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+          <SortableContext
+            items={globalSelectedList.map(item => item.instanceId)}
+            strategy={verticalListSortingStrategy}
           >
-            <SortableContext
-              items={globalSelectedList.map(item => item.instanceId)}
-              strategy={verticalListSortingStrategy}
-            >
-              <div className="selected-list">
-                {globalSelectedList.map((item, index) => (
-                  <SortableItem
-                    key={item.instanceId}
-                    item={item}
-                    index={index}
-                    onRemove={handleRemove}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+            <div className="selected-list">
+              {globalSelectedList.map((item, index) => (
+                <SortableItem
+                  key={item.instanceId}
+                  item={item}
+                  index={index}
+                  onRemove={handleRemove}
+                />
+              ))}
+            </div>
+          </SortableContext>
         )}
       </div>
 
@@ -158,10 +161,11 @@ const SelectedListPanel = () => {
         <Button
           variant="primary"
           onClick={handleExport}
-          disabled={count === 0}
+          disabled={count === 0 || exporting}
+          loading={exporting}
           style={{ width: '100%' }}
         >
-          📦 导出已选
+          📦 导出已选 ({count})
         </Button>
       </div>
     </div>

@@ -1,12 +1,73 @@
 import React, { useState, useRef } from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { WorkflowSteps } from '../../store/useWorkflowStore';
+import { useDraggable } from '@dnd-kit/core';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import ChatMessage from './ChatMessage';
-import { generateShots } from '../../services/api';
+import RefImageDropZone from './RefImageDropZone';
+import { generateShots, generateGrid } from '../../services/api';
 import Loading from '../common/Loading';
 import './StepSplit.css';
+
+// 可拖拽的分镜图片组件
+const DraggableImage = ({ imageUrl, index, shotInfo }) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `split-image-${index}`,
+    data: {
+      id: `split-image-${index}`,
+      index,
+      src: imageUrl,
+      tileId: `split-${index}`,
+      badge: shotInfo?.angle_type || `分镜 ${index + 1}`,
+      shotNumber: shotInfo?.shot_number || index + 1
+    }
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: 'grab'
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        aspectRatio: '1',
+        backgroundColor: 'var(--border)',
+        borderRadius: 'var(--radius-xs)',
+        overflow: 'hidden',
+        position: 'relative',
+        ...style
+      }}
+      {...attributes}
+      {...listeners}
+    >
+      <img
+        src={imageUrl}
+        alt={`分镜 ${index + 1}`}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          pointerEvents: 'none'
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        bottom: '2px',
+        right: '4px',
+        fontSize: '0.7rem',
+        color: 'white',
+        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+        fontWeight: 500
+      }}>
+        {index + 1}
+      </div>
+    </div>
+  );
+};
 
 const StepSplit = ({ visible = true }) => {
   const {
@@ -21,11 +82,13 @@ const StepSplit = ({ visible = true }) => {
   } = useWorkflowStore();
 
   const [loading, setLoading] = useState(false);
+  const [gridLoading, setGridLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showResults, setShowResults] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const [refImages, setRefImages] = useState([]);
+  const taskId = useWorkflowStore(state => state.taskId);
 
   // 自动调整文本框高度
   const handleInput = (e) => {
@@ -71,11 +134,9 @@ const StepSplit = ({ visible = true }) => {
         }));
         setSplitScenes(scenes);
 
-        setShowResults(true);
-
         // 自动进入下一步
         setTimeout(() => {
-          setCurrentStep(WorkflowSteps.SEGMENT);
+          setCurrentStep(WorkflowSteps.SCRIPT_REVIEW);
         }, 500);
       } else {
         setError(response.error || '生成失败，请重试');
@@ -122,8 +183,75 @@ const StepSplit = ({ visible = true }) => {
     }
   };
 
+  // 处理参考图添加
+  const handleAddRefImage = (imageData) => {
+    setRefImages(prev => [...prev, imageData]);
+  };
+
+  // 处理参考图移除
+  const handleRemoveRefImage = (id) => {
+    setRefImages(prev => prev.filter(img => img.id !== id));
+  };
+
+  // 生成宫格图
+  const handleGenerateGrid = async () => {
+    if (!storyboard) {
+      setError('请先生成分镜脚本');
+      return;
+    }
+
+    if (!taskId) {
+      setError('缺少任务 ID');
+      return;
+    }
+
+    setGridLoading(true);
+    setError(null);
+
+    try {
+      // 获取参考图的 File 对象（需要从 src data URL 转换回 File）
+      const refImageFiles = refImages.map(img => {
+        // 将 base64 转换回 Blob，然后创建 File 对象
+        const arr = img.src.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        return new File([blob], img.name || `ref_image_${Date.now()}`, { type: mime });
+      });
+
+      const response = await generateGrid(storyboard, taskId, refImageFiles);
+
+      if (response.success) {
+        // 保存 splitsImages 到 store
+        const { setSplitsImages } = useWorkflowStore.getState();
+        if (response.split_images && response.split_images.length > 0) {
+          setSplitsImages(response.split_images);
+        }
+      } else {
+        setError(response.error || '生成宫格失败，请重试');
+      }
+    } catch (err) {
+      setError(err.message || '网络错误，请检查连接');
+    } finally {
+      setGridLoading(false);
+    }
+  };
+
   // 获取拆分结果
   const splitResults = useWorkflowStore(state => state.splitScenes);
+
+  // 调试日志
+  // console.log('[StepSplit] 渲染状态:', {
+  //   splitsImages,
+  //   splitsImagesLength: splitsImages?.length,
+  //   storyboard,
+  //   splitResults
+  // });
 
   return (
     <ChatMessage stepId="step-split" visible={visible}>
@@ -195,11 +323,12 @@ const StepSplit = ({ visible = true }) => {
 
           <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button onClick={handleSplit} disabled={loading} loading={loading}>
+              生成分镜 →
             </Button>
           </div>
 
-          {/* 拆分结果区域 */}
-          {showResults && splitResults.length > 0 && (
+          {/* 拆分结果区域 - 基于 storyboard 数据判断是否显示 */}
+          {storyboard?.shots?.length > 0 && splitResults.length > 0 && (
             <div className="split-results">
               <div className="results-header">
                 <span>生成结果 ({splitResults.length} 个分镜)</span>
@@ -245,7 +374,7 @@ const StepSplit = ({ visible = true }) => {
                 color: 'var(--text-sub)',
                 marginBottom: '8px'
               }}>
-                分镜画面 ({splitsImages.length} 张)
+                分镜画面 ({splitsImages.length} 张) - 可拖拽到左侧
               </div>
               <div style={{
                 display: 'grid',
@@ -256,39 +385,43 @@ const StepSplit = ({ visible = true }) => {
                 borderRadius: 'var(--radius-sm)',
                 border: '1px solid var(--border)'
               }}>
-                {splitsImages.map((imageUrl, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      aspectRatio: '1',
-                      backgroundColor: 'var(--border)',
-                      borderRadius: 'var(--radius-xs)',
-                      overflow: 'hidden',
-                      position: 'relative'
-                    }}
-                  >
-                    <img
-                      src={imageUrl}
-                      alt={`分镜 ${index + 1}`}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
+                {splitsImages.map((imageUrl, index) => {
+                  // 获取对应的 shot 信息
+                  const shotInfo = storyboard?.shots?.[index];
+                  return (
+                    <DraggableImage
+                      key={index}
+                      imageUrl={imageUrl}
+                      index={index}
+                      shotInfo={shotInfo}
                     />
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '2px',
-                      right: '4px',
-                      fontSize: '0.7rem',
-                      color: 'white',
-                      textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                      fontWeight: 500
-                    }}>
-                      {index + 1}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 参考图上传区域 */}
+          {storyboard && (
+            <div style={{ marginTop: '16px' }}>
+              <div style={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                color: 'var(--text-sub)',
+                marginBottom: '8px'
+              }}>
+                参考图上传（可选）
+              </div>
+              <RefImageDropZone
+                images={refImages}
+                onAdd={handleAddRefImage}
+                onRemove={handleRemoveRefImage}
+                placeholder="点击或拖拽上传宫格生成参考图"
+              />
+              <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                <Button onClick={handleGenerateGrid} disabled={gridLoading} loading={gridLoading}>
+                  {gridLoading ? '生成中...' : '🎨 生成宫格图'}
+                </Button>
               </div>
             </div>
           )}

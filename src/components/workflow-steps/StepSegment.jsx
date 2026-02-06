@@ -45,12 +45,12 @@ const StepSegment = ({ visible = true }) => {
   // 是否有 storyboard 数据
   const hasStoryboard = !!storyboard && shots.length > 0;
 
-  console.log('[StepSegment] 渲染状态:', {
-    taskId,
-    storyboard,
-    hasStoryboard,
-    shotsLength: shots.length
-  });
+  // console.log('[StepSegment] 渲染状态:', {
+  //   taskId,
+  //   storyboard,
+  //   hasStoryboard,
+  //   shotsLength: shots.length
+  // });
 
   // 组件挂载时，如果有 taskId 但没有 storyboard，从历史记录恢复
   useEffect(() => {
@@ -62,7 +62,9 @@ const StepSegment = ({ visible = true }) => {
             setStoryboard(task.storyboard);
           }
         } catch (err) {
-          console.warn('恢复 storyboard 失败:', err);
+          // console.warn('恢复 storyboard 失败:', err);
+          // Suppress unused variable warning
+          void err;
         }
       }
     };
@@ -78,10 +80,12 @@ const StepSegment = ({ visible = true }) => {
           const response = await getTaskGridImage(taskId);
           if (response?.grid_image) {
             setGridImage(response.grid_image);
-            console.log('[StepSegment] 成功获取宫格图，长度:', response.grid_image.length);
+            // console.log('[StepSegment] 成功获取宫格图，长度:', response.grid_image.length);
           }
         } catch (err) {
-          console.warn('[StepSegment] 获取宫格图失败:', err);
+          // console.warn('[StepSegment] 获取宫格图失败:', err);
+          // Suppress unused variable warning
+          void err;
         } finally {
           setLoadingGrid(false);
         }

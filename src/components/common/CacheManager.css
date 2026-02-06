@@ -1,0 +1,116 @@
+.cache-manager-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cache-manager {
+  width: 400px;
+  max-width: 90vw;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.cache-manager .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-sub);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.cache-manager .close-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.cache-info {
+  padding: 16px 0;
+}
+
+.cache-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cache-stat:last-child {
+  border-bottom: none;
+}
+
+.cache-label {
+  color: var(--text-sub);
+  font-size: 0.9rem;
+}
+
+.cache-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cache-status {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.cache-status.normal {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.cache-status.warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.cache-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.cache-actions button {
+  flex: 1;
+}
+
+.cache-tips {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
+.cache-tips p {
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.cache-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.cache-tips li {
+  margin: 4px 0;
+}

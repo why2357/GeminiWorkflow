@@ -58,7 +58,7 @@ const StepWorkspace = ({ visible = true }) => {
             setStoryboard(task.storyboard);
           }
         } catch (err) {
-          console.warn('恢复 storyboard 失败:', err);
+          // console.warn('恢复 storyboard 失败:', err);
         }
       }
     };
@@ -67,7 +67,7 @@ const StepWorkspace = ({ visible = true }) => {
 
   // 当 taskId 切换时，重置宫格图和视图模式
   useEffect(() => {
-    console.log('[StepWorkspace taskId 切换] 重置宫格图状态, 新 taskId:', taskId);
+    // console.log('[StepWorkspace taskId 切换] 重置宫格图状态, 新 taskId:', taskId);
     setGridImage(null);
     setTiles([]);
     setViewMode('upload');
@@ -77,38 +77,38 @@ const StepWorkspace = ({ visible = true }) => {
   // 组件挂载时，尝试从历史记录恢复宫格图，或重新生成
   useEffect(() => {
     const restoreOrGenerate = async () => {
-      console.log('[StepWorkspace restoreOrGenerate] 开始检查, hasStoryboard:', hasStoryboard, 'isStoryboardIncomplete:', isStoryboardIncomplete, 'gridImage:', !!gridImage, 'loading:', loading, 'taskId:', taskId);
+      // console.log('[StepWorkspace restoreOrGenerate] 开始检查, hasStoryboard:', hasStoryboard, 'isStoryboardIncomplete:', isStoryboardIncomplete, 'gridImage:', !!gridImage, 'loading:', loading, 'taskId:', taskId);
 
       // 只在有完整 storyboard 且没有宫格图时执行
       if (hasStoryboard && !isStoryboardIncomplete && !gridImage && !loading) {
-        console.log('[StepWorkspace restoreOrGenerate] 条件满足，尝试从历史记录获取宫格图');
+        // console.log('[StepWorkspace restoreOrGenerate] 条件满足，尝试从历史记录获取宫格图');
 
         // 先尝试从历史记录获取已生成的宫格图
         try {
           const response = await getTaskGridImage(taskId);
-          console.log('[StepWorkspace restoreOrGenerate] getTaskGridImage 响应:', response);
-          console.log('[StepWorkspace restoreOrGenerate] response.grid_image 存在?', !!response?.grid_image);
+          // console.log('[StepWorkspace restoreOrGenerate] getTaskGridImage 响应:', response);
+          // console.log('[StepWorkspace restoreOrGenerate] response.grid_image 存在?', !!response?.grid_image);
 
           if (response?.grid_image) {
             // 找到已生成的宫格图，直接使用
-            console.log('[StepWorkspace restoreOrGenerate] 找到已生成的宫格图，直接使用');
+            // console.log('[StepWorkspace restoreOrGenerate] 找到已生成的宫格图，直接使用');
             setGridImage(response.grid_image);
             generateVirtualTiles(response.grid_image);
             setViewMode('grid');
             return;
           } else {
-            console.log('[StepWorkspace restoreOrGenerate] 历史记录中没有 grid_image');
+            // console.log('[StepWorkspace restoreOrGenerate] 历史记录中没有 grid_image');
           }
         } catch (err) {
           // 历史记录中没有宫格图，继续生成
-          console.warn('[StepWorkspace restoreOrGenerate] 从历史记录获取宫格图失败:', err);
+          // console.warn('[StepWorkspace restoreOrGenerate] 从历史记录获取宫格图失败:', err);
         }
 
         // 没有找到已生成的宫格图，调用生成接口
-        console.log('[StepWorkspace restoreOrGenerate] 没有找到已生成的宫格图，调用生成接口');
+        // console.log('[StepWorkspace restoreOrGenerate] 没有找到已生成的宫格图，调用生成接口');
         handleGenerateGrid();
       } else {
-        console.log('[StepWorkspace restoreOrGenerate] 条件不满足，跳过');
+        // console.log('[StepWorkspace restoreOrGenerate] 条件不满足，跳过');
       }
     };
     restoreOrGenerate();
@@ -116,10 +116,10 @@ const StepWorkspace = ({ visible = true }) => {
 
   // 生成宫格图
   const handleGenerateGrid = async () => {
-    console.log('[StepWorkspace handleGenerateGrid] 开始生成宫格图, storyboard:', !!storyboard, 'taskId:', taskId);
+    // console.log('[StepWorkspace handleGenerateGrid] 开始生成宫格图, storyboard:', !!storyboard, 'taskId:', taskId);
 
     if (!storyboard || !taskId) {
-      console.error('[StepWorkspace handleGenerateGrid] 缺少数据');
+      // console.error('[StepWorkspace handleGenerateGrid] 缺少数据');
       setError('缺少分镜脚本数据，请先完成前面的步骤');
       return;
     }
@@ -128,18 +128,18 @@ const StepWorkspace = ({ visible = true }) => {
     setError(null);
 
     try {
-      console.log('[StepWorkspace handleGenerateGrid] 调用 generateGrid API');
+      // console.log('[StepWorkspace handleGenerateGrid] 调用 generateGrid API');
       const response = await generateGrid(storyboard, taskId);
 
-      console.log('[StepWorkspace handleGenerateGrid] generateGrid 响应:', response);
-      console.log('[StepWorkspace handleGenerateGrid] response.grid_image 存在?', !!response?.grid_image);
-      console.log('[StepWorkspace handleGenerateGrid] response.error:', response?.error);
+      // console.log('[StepWorkspace handleGenerateGrid] generateGrid 响应:', response);
+      // console.log('[StepWorkspace handleGenerateGrid] response.grid_image 存在?', !!response?.grid_image);
+      // console.log('[StepWorkspace handleGenerateGrid] response.error:', response?.error);
 
       // 检查响应是否包含 grid_image（成功标志）
       if (response.grid_image) {
         // 后端已返回完整的 data URL，直接使用
         const fullGridImage = response.grid_image;
-        console.log('[StepWorkspace handleGenerateGrid] 成功获取宫格图，长度:', fullGridImage.length);
+        // console.log('[StepWorkspace handleGenerateGrid] 成功获取宫格图，长度:', fullGridImage.length);
 
         // 设置宫格图
         setGridImage(fullGridImage);
@@ -150,13 +150,13 @@ const StepWorkspace = ({ visible = true }) => {
 
         // 切换到网格视图
         setViewMode('grid');
-        console.log('[StepWorkspace handleGenerateGrid] 宫格图设置完成');
+        // console.log('[StepWorkspace handleGenerateGrid] 宫格图设置完成');
       } else {
-        console.error('[StepWorkspace handleGenerateGrid] 响应中没有 grid_image');
+        // console.error('[StepWorkspace handleGenerateGrid] 响应中没有 grid_image');
         setError(response.error || '生成宫格图失败，请重试');
       }
     } catch (err) {
-      console.error('[StepWorkspace handleGenerateGrid] 生成宫格图失败:', err);
+      // console.error('[StepWorkspace handleGenerateGrid] 生成宫格图失败:', err);
       setError(err.message || '网络错误，请检查连接');
     } finally {
       setLoading(false);

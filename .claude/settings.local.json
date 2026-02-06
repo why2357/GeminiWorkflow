@@ -10,7 +10,12 @@
       "mcp__chrome-devtools__click",
       "mcp__chrome-devtools__evaluate_script",
       "mcp__chrome-devtools__take_screenshot",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "mcp__web-reader__webReader",
+      "mcp__chrome-devtools__new_page",
+      "Bash(npm run lint:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

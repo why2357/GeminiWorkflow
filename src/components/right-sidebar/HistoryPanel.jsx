@@ -48,7 +48,10 @@ const HistoryPanel = () => {
           taskId: task.task_id,
           storyboard: task.storyboard,
           script: task.script,
-          hasGridImage: true // 标记可能有宫格图
+          hasGridImage: true, // 标记可能有宫格图
+          // 使用后端返回的 has_grid 和 has_splits 字段
+          hasGrid: task.has_grid ?? true,
+          hasSplits: task.has_splits ?? true
         }));
         setApiTasks(convertedSessions);
       }
@@ -60,41 +63,47 @@ const HistoryPanel = () => {
   };
 
   // 按需加载单个任务的缩略图
-  const loadThumbnail = useCallback(async (taskId) => {
+  const loadThumbnail = useCallback(async (taskId, hasGrid = true) => {
+    // 检查后端标记是否有宫格图
+    if (!hasGrid) {
+      // console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 没有 has_grid 标记，跳过加载缩略图`);
+      return;
+    }
+
     // 如果已经有缩略图 URL，直接返回
     if (thumbnailUrls[taskId]) {
-      console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 已有缩略图，跳过`);
+      // console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 已有缩略图，跳过`);
       return;
     }
 
     // 如果正在加载或已经加载失败过（已尝试过），不再重复请求
     if (loadedTasks.has(taskId)) {
-      console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 已尝试过加载，跳过`);
+      // console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 已尝试过加载，跳过`);
       return;
     }
 
-    console.log(`[HistoryPanel loadThumbnail] 开始加载任务 ${taskId} 的缩略图`);
+    // console.log(`[HistoryPanel loadThumbnail] 开始加载任务 ${taskId} 的缩略图`);
     // 标记为"已尝试"，防止重复请求
     setLoadedTasks(prev => new Set([...prev, taskId]));
 
     try {
       const response = await getTaskGridImage(taskId);
-      console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} API 响应:`, response);
-      console.log(`[HistoryPanel loadThumbnail] response.grid_image 存在?`, !!response?.grid_image);
-      console.log(`[HistoryPanel loadThumbnail] grid_image 长度:`, response?.grid_image?.length);
+      // console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} API 响应:`, response);
+      // console.log(`[HistoryPanel loadThumbnail] response.grid_image 存在?`, !!response?.grid_image);
+      // console.log(`[HistoryPanel loadThumbnail] grid_image 长度:`, response?.grid_image?.length);
 
       if (response?.grid_image) {
         setThumbnailUrls(prev => ({
           ...prev,
           [taskId]: response.grid_image
         }));
-        console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 缩略图设置成功`);
+        // console.log(`[HistoryPanel loadThumbnail] 任务 ${taskId} 缩略图设置成功`);
       } else {
-        console.warn(`[HistoryPanel loadThumbnail] 任务 ${taskId} 响应中没有 grid_image，响应内容:`, response);
+        // console.warn(`[HistoryPanel loadThumbnail] 任务 ${taskId} 响应中没有 grid_image，响应内容:`, response);
       }
     } catch (err) {
       // 静默失败，不影响用户体验
-      console.error(`[HistoryPanel loadThumbnail] 加载任务 ${taskId} 缩略图失败:`, err);
+      // console.error(`[HistoryPanel loadThumbnail] 加载任务 ${taskId} 缩略图失败:`, err);
     }
   }, [loadedTasks, thumbnailUrls]);
 
@@ -107,8 +116,9 @@ const HistoryPanel = () => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const taskId = entry.target.dataset.taskId;
+            const hasGrid = entry.target.dataset.hasGrid === 'true';
             if (taskId) {
-              loadThumbnail(taskId);
+              loadThumbnail(taskId, hasGrid);
               observerRef.current?.unobserve(entry.target);
             }
           }
@@ -146,10 +156,6 @@ const HistoryPanel = () => {
 
   // 处理会话/历史记录点击
   const handleSessionClick = async (session) => {
-    console.log('[HistoryPanel] 点击历史记录:', session);
-    console.log('[HistoryPanel] session.taskId:', session.taskId);
-    console.log('[HistoryPanel] session.storyboard:', session.storyboard);
-
     setActiveSession(session.id);
 
     // 如果是 API 任务（有 taskId），恢复到工作流
@@ -158,61 +164,46 @@ const HistoryPanel = () => {
       const isComplete = session.storyboard?.shots?.length > 0 &&
                         session.storyboard.shots[0]?.prompt_text;
 
-      console.log('[HistoryPanel] 本地数据是否完整:', isComplete);
-
       let storyboardToUse = isComplete ? session.storyboard : null;
 
-      if (isComplete) {
-        // 本地数据完整，直接使用
-        console.log('[HistoryPanel] 使用本地数据恢复任务');
-      } else {
+      if (!isComplete) {
         // 本地数据不完整，从后端重新获取
-        console.log('[HistoryPanel] 本地数据不完整，从后端获取完整数据');
         try {
           const task = await restoreTaskFromHistory(session.taskId);
-          console.log('[HistoryPanel] 从后端获取的任务:', task);
-          console.log('[HistoryPanel] task.storyboard:', task?.storyboard);
-          console.log('[HistoryPanel] task.storyboard.shots:', task?.storyboard?.shots);
-
           if (task && task.storyboard && task.storyboard.shots?.length > 0) {
-            console.log('[HistoryPanel] 数据完整');
             storyboardToUse = task.storyboard;
           } else {
-            console.warn('[HistoryPanel] 从历史记录获取的数据不完整');
             return;
           }
         } catch (err) {
-          console.error('[HistoryPanel] 恢复任务失败:', err);
+          // Suppress unused variable warning
+          void err;
           return;
         }
       }
 
-      // 获取 splits 数据并显示在分镜脚本步骤
-      try {
-        console.log('[HistoryPanel] 获取 splits 数据...');
-        const splitsResponse = await getTaskSplitImages(session.taskId);
-        console.log('[HistoryPanel] splits 响应:', splitsResponse);
+      // 设置基本信息并跳转到 SCRIPT_REVIEW 步骤
+      setTaskId(session.taskId);
+      setStoryboard(storyboardToUse);
+      setFullScript(session.script || '');
+      setCurrentStep(WorkflowSteps.SCRIPT_REVIEW);
 
-        if (splitsResponse?.split_images) {
-          // 直接设置状态，不调用 restoreTask（避免跳转到 WORKSPACE）
-          setTaskId(session.taskId);
-          setStoryboard(storyboardToUse);
-          setFullScript(session.script || '');
-
-          // 将 shots 转换为 scenes 格式
-          const scenes = storyboardToUse.shots.map((shot, index) => ({
-            id: shot.shot_number,
-            title: `分镜 ${index + 1}: ${shot.angle_type}`,
-            description: shot.prompt_text
-          }));
-          setSplitScenes(scenes);
-
-          setSplitsImages(splitsResponse.split_images);
-          setCurrentStep(WorkflowSteps.SPLIT); // 跳转到分镜脚本步骤
-          console.log('[HistoryPanel] 已跳转到分镜脚本步骤');
-        }
-      } catch (err) {
-        console.error('[HistoryPanel] 获取 splits 数据失败:', err);
+      // 如果有 splits 数据，后台获取（不影响页面显示）
+      if (session.hasSplits) {
+        getTaskSplitImages(session.taskId).then(splitsResponse => {
+          if (splitsResponse?.split_images) {
+            setSplitsImages(splitsResponse.split_images);
+            // 将 shots 转换为 scenes 格式供其他步骤使用
+            const scenes = storyboardToUse.shots.map((shot, index) => ({
+              id: shot.shot_number,
+              title: `分镜 ${index + 1}: ${shot.angle_type}`,
+              description: shot.prompt_text
+            }));
+            setSplitScenes(scenes);
+          }
+        }).catch(() => {
+          // 静默失败，不影响页面显示
+        });
       }
     }
   };
@@ -285,6 +276,7 @@ const HistoryPanel = () => {
                     className="session-thumb"
                     ref={(el) => setThumbnailRef(el, session.taskId)}
                     data-task-id={session.taskId}
+                    data-has-grid={session.hasGrid ?? true}
                   >
                     {thumbUrl ? (
                       <img src={thumbUrl} alt={session.name} />

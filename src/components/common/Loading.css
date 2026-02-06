@@ -1,0 +1,261 @@
+/* ==================== 加载容器 ==================== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ==================== 尺寸变体 ==================== */
+.loading-sm {
+  gap: 8px;
+}
+
+.loading-md {
+  gap: 12px;
+}
+
+.loading-lg {
+  gap: 16px;
+}
+
+/* ==================== 文字 ==================== */
+.loading-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+.loading-sm .loading-text {
+  font-size: 0.75rem;
+}
+
+.loading-lg .loading-text {
+  font-size: 1rem;
+}
+
+/* ==================== 全屏遮罩 ==================== */
+.loading-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+/* ==================== Spinner 加载器 ==================== */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-sm .loading-spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.loading-lg .loading-spinner {
+  width: 60px;
+  height: 60px;
+  border-width: 4px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== Dots 加载器 ==================== */
+.loading-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: dots-bounce 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-sm .loading-dots span {
+  width: 6px;
+  height: 6px;
+  gap: 4px;
+}
+
+.loading-lg .loading-dots span {
+  width: 12px;
+  height: 12px;
+  gap: 8px;
+}
+
+@keyframes dots-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==================== Pulse 加载器 ==================== */
+.loading-pulse {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-sm .loading-pulse {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-lg .loading-pulse {
+  width: 60px;
+  height: 60px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==================== Bar 加载器 ==================== */
+.loading-bar {
+  width: 120px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  background: var(--primary);
+  border-radius: 2px;
+  animation: bar-slide 1.5s ease-in-out infinite;
+}
+
+.loading-sm .loading-bar {
+  width: 80px;
+  height: 3px;
+}
+
+.loading-lg .loading-bar {
+  width: 200px;
+  height: 6px;
+}
+
+@keyframes bar-slide {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ==================== Bounce 加载器 ==================== */
+.loading-bounce {
+  display: flex;
+  gap: 8px;
+}
+
+.loading-bounce div {
+  width: 12px;
+  height: 12px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: bounce 0.6s ease-in-out infinite alternate;
+}
+
+.loading-bounce div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-bounce div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.loading-sm .loading-bounce div {
+  width: 8px;
+  height: 8px;
+  gap: 4px;
+}
+
+.loading-lg .loading-bounce div {
+  width: 16px;
+  height: 16px;
+  gap: 12px;
+}
+
+@keyframes bounce {
+  to {
+    transform: translateY(-16px);
+  }
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+  }
+
+  .loading-lg .loading-spinner {
+    width: 48px;
+    height: 48px;
+  }
+
+  .loading-dots span {
+    width: 6px;
+    height: 6px;
+  }
+
+  .loading-bar {
+    width: 100px;
+  }
+
+  .loading-text {
+    font-size: 0.85rem;
+  }
+}

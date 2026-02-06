@@ -1,0 +1,101 @@
+/* 聊天消息容器 */
+.chat-message {
+  display: flex;
+  gap: 16px;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 头像 */
+.chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+}
+
+/* 内容区 */
+.chat-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 100%;
+}
+
+/* 名称 */
+.chat-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-left: 4px;
+}
+
+/* 隐藏状态的步骤 */
+.chat-message.step-hidden {
+  display: none;
+}
+
+/* 可见状态的步骤 */
+.chat-message.step-visible {
+  display: flex;
+}
+
+/* ==================== 响应式设计 ==================== */
+
+/* 移动设备 (< 768px) */
+@media (max-width: 768px) {
+  .chat-message {
+    gap: 12px;
+  }
+
+  .chat-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  }
+
+  .chat-content {
+    gap: 6px;
+  }
+
+  .chat-name {
+    font-size: 0.75rem;
+    margin-left: 2px;
+  }
+}
+
+/* 超小屏幕 (< 480px) */
+@media (max-width: 480px) {
+  .chat-message {
+    gap: 8px;
+  }
+
+  .chat-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .chat-content {
+    gap: 4px;
+  }
+}

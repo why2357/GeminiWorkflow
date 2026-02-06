@@ -1,0 +1,65 @@
+/* 脚本列表容器 */
+.script-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 16px;
+}
+
+/* 空状态 */
+.script-empty {
+  text-align: center;
+  color: var(--text-sub);
+  padding: 20px;
+}
+
+/* 脚本项 */
+.script-item {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.script-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.script-item-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.script-item-badge {
+  background: #e0e7ff;
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.script-content-textarea {
+  min-height: 80px !important;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* 步骤描述 */
+.step-description {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+.chat-bubble {
+  width: 100%;
+}

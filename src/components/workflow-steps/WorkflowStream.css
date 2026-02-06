@@ -1,0 +1,81 @@
+/* 聊天流容器 */
+.chat-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 60px;
+}
+
+/* 隐藏的步骤 */
+.chat-message.step-hidden {
+  display: none;
+}
+
+/* 可见的步骤 */
+.chat-message.step-visible {
+  display: flex;
+}
+
+/* 动画效果 - 暂时禁用来调试 */
+/*
+.chat-message {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+*/
+
+/* ==================== 响应式设计 ==================== */
+
+/* 移动设备 (< 768px) */
+@media (max-width: 768px) {
+  .chat-stream {
+    gap: 16px;
+    padding-bottom: 40px;
+  }
+
+  .chat-message {
+    gap: 12px;
+  }
+
+  .chat-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .chat-content {
+    gap: 6px;
+  }
+
+  .chat-name {
+    font-size: 0.75rem;
+  }
+}
+
+/* 超小屏幕 (< 480px) */
+@media (max-width: 480px) {
+  .chat-stream {
+    gap: 12px;
+    padding-bottom: 20px;
+  }
+
+  .chat-message {
+    gap: 8px;
+  }
+
+  .chat-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+}

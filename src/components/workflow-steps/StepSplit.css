@@ -1,0 +1,160 @@
+/* 聊天气泡包装 */
+.chat-bubble {
+  width: 100%;
+}
+
+/* 步骤描述 */
+.step-description {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+
+/* 图片上传区域 */
+.image-upload-section {
+  margin-bottom: 16px;
+}
+
+.image-upload-placeholder {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.image-upload-placeholder:hover {
+  border-color: var(--primary);
+  background: #eef2ff;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+/* 错误提示 */
+.error-message {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  color: #991b1b;
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+
+/* 加载容器 */
+.loading-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 剧本输入框 */
+.script-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: none;
+  background: var(--input-bg);
+  color: var(--text-main);
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.script-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+}
+
+.script-textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* 拆分结果区域 */
+.split-results {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.results-header {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 场景结果项 */
+.scene-result-item {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.scene-result-item:hover {
+  border-color: var(--primary);
+  background: #eef2ff;
+  box-shadow: var(--shadow-sm);
+}
+
+.scene-title {
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.scene-summary {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.scene-result-item button {
+  margin-top: 8px;
+}

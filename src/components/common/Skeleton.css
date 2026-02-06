@@ -1,0 +1,170 @@
+/* ==================== 骨架屏基础样式 ==================== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==================== 文本骨架屏 ==================== */
+.skeleton-text {
+  height: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.skeleton-text-short {
+  width: 60% !important;
+}
+
+.skeleton-text-group {
+  padding: 12px 0;
+}
+
+/* ==================== 矩形骨架屏 ==================== */
+.skeleton-rect {
+  display: inline-block;
+}
+
+/* ==================== 圆形骨架屏 ==================== */
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+/* ==================== 头像骨架屏 ==================== */
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ==================== 图片骨架屏 ==================== */
+.skeleton-image {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+}
+
+/* ==================== 按钮骨架屏 ==================== */
+.skeleton-button {
+  height: 36px;
+  min-width: 80px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==================== 卡片骨架屏 ==================== */
+.skeleton-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+.skeleton-card-header {
+  margin-bottom: 16px;
+}
+
+.skeleton-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ==================== 列表骨架屏 ==================== */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-list-item-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-list-item-content {
+  flex: 1;
+  height: 48px;
+}
+
+/* ==================== 聊天骨架屏 ==================== */
+.skeleton-chat {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.skeleton-chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-chat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-chat-title {
+  width: 120px;
+  height: 14px;
+}
+
+.skeleton-chat-line {
+  width: 100%;
+  height: 16px;
+}
+
+.skeleton-chat-line-short {
+  width: 70%;
+  height: 16px;
+}
+
+/* ==================== 响应式设计 ==================== */
+
+@media (max-width: 768px) {
+  .skeleton-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .skeleton-chat-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .skeleton-list-item-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .skeleton-chat {
+    gap: 12px;
+  }
+}

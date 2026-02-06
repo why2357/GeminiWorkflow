@@ -1,0 +1,196 @@
+/* 上传区域 */
+.upload-zone {
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  border: 2px dashed var(--border);
+  cursor: pointer;
+}
+
+.upload-zone:hover {
+  border-color: var(--primary);
+  background: #f1f5f9;
+}
+
+/* 加载区域 */
+.loading-zone {
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 错误覆盖层 */
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.error-content {
+  text-align: center;
+  padding: 32px;
+}
+
+/* 网格容器 */
+.grid-container {
+  height: 100%;
+  min-height: 400px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 交互式网格 */
+.interactive-grid {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
+  background: var(--border);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* 切片图块 */
+.tile {
+  position: relative;
+  background-color: #f1f5f9;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tile:hover {
+  filter: brightness(1.1);
+  z-index: 1;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tile.selected {
+  outline: 3px solid var(--primary);
+  outline-offset: -3px;
+}
+
+/* 切片序号 */
+.tile-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* 选中标记 */
+.tile-check {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5);
+}
+
+.chat-bubble {
+  width: 100%;
+}
+
+.chat-bubble.flex-grow {
+  flex-grow: 1;
+  min-height: 500px;
+}
+
+/* ==================== 响应式设计 ==================== */
+
+/* 小型平板 (< 1024px) */
+@media (max-width: 1024px) {
+  .grid-container {
+    padding: 16px;
+  }
+
+  .interactive-grid {
+    max-width: 100%;
+  }
+}
+
+/* 移动设备 (< 768px) */
+@media (max-width: 768px) {
+  .upload-zone {
+    min-height: 250px;
+  }
+
+  .grid-container {
+    min-height: 250px;
+    padding: 12px;
+  }
+
+  .interactive-grid {
+    border-width: 1px;
+  }
+
+  .tile-check {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .chat-bubble.flex-grow {
+    min-height: 350px;
+  }
+}
+
+/* 超小屏幕 (< 480px) */
+@media (max-width: 480px) {
+  .upload-zone {
+    min-height: 200px;
+  }
+
+  .grid-container {
+    min-height: 200px;
+    padding: 8px;
+  }
+
+  .tile-check {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .chat-bubble.flex-grow {
+    min-height: 280px;
+  }
+}

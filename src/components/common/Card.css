@@ -1,0 +1,107 @@
+/* Card 基础样式 */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card.flex-grow {
+  flex-grow: 1;
+  min-height: 400px;
+}
+
+/* Card Header */
+.card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  background: #fafafa;
+  gap: 12px;
+}
+
+/* Card Body */
+.card-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Card Title */
+.card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+/* Step Icon (用于工作流步骤) */
+.step-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ==================== 响应式设计 ==================== */
+
+/* 移动设备 (< 768px) */
+@media (max-width: 768px) {
+  .card.flex-grow {
+    min-height: 300px;
+  }
+
+  .card-header {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .card-body {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .step-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+}
+
+/* 超小屏幕 (< 480px) */
+@media (max-width: 480px) {
+  .card-header {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .card-body {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+  }
+}

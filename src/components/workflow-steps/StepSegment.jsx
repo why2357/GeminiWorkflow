@@ -173,7 +173,7 @@ const StepSegment = ({ visible = true }) => {
       }));
 
     setGeneratedScripts(selectedScripts);
-    setCurrentStep(WorkflowSteps.SCRIPT_REVIEW);
+    setCurrentStep(WorkflowSteps.RESULTS);
   };
 
   // 测试模式：生成 25 个测试 shot

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWorkflowStore, WorkflowSteps } from '../../store/useWorkflowStore';
 import Button from '../common/Button';
-import { getHistory, getTaskGridImage, restoreTaskFromHistory, getTaskSplitImages } from '../../services/api';
+import { getHistory, getTaskGridImage, restoreTaskFromHistory } from '../../services/api';
 import Loading from '../common/Loading';
 import './HistoryPanel.css';
 
@@ -17,13 +17,11 @@ const HistoryPanel = () => {
     activeSessionId,
     setActiveSession,
     deleteSession,
-    addSession,
-    setSplitsImages,
-    setCurrentStep,
+    resetWorkflow,
     setStoryboard,
     setTaskId,
     setFullScript,
-    setSplitScenes
+    setCurrentStep
   } = useWorkflowStore();
 
   // 从 API 加载历史记录
@@ -135,18 +133,6 @@ const HistoryPanel = () => {
   // 合并本地会话和 API 任务
   const allSessions = [...apiTasks, ...sessions];
 
-  const handleCreateSession = () => {
-    const newSession = {
-      id: Date.now(),
-      name: `切片组 ${allSessions.length + 1}`,
-      thumb: null,
-      timestamp: new Date(),
-      tiles: []
-    };
-    addSession(newSession);
-    setActiveSession(newSession.id);
-  };
-
   const handleDeleteSession = (e, sessionId) => {
     e.stopPropagation();
     if (confirm('确定要删除这个切片组吗？')) {
@@ -182,29 +168,13 @@ const HistoryPanel = () => {
         }
       }
 
-      // 设置基本信息并跳转到 SCRIPT_REVIEW 步骤
+      // 设置基本信息并跳转到 SPLIT 步骤
       setTaskId(session.taskId);
       setStoryboard(storyboardToUse);
       setFullScript(session.script || '');
-      setCurrentStep(WorkflowSteps.SCRIPT_REVIEW);
+      setCurrentStep(WorkflowSteps.SPLIT);
 
-      // 如果有 splits 数据，后台获取（不影响页面显示）
-      if (session.hasSplits) {
-        getTaskSplitImages(session.taskId).then(splitsResponse => {
-          if (splitsResponse?.split_images) {
-            setSplitsImages(splitsResponse.split_images);
-            // 将 shots 转换为 scenes 格式供其他步骤使用
-            const scenes = storyboardToUse.shots.map((shot, index) => ({
-              id: shot.shot_number,
-              title: `分镜 ${index + 1}: ${shot.angle_type}`,
-              description: shot.prompt_text
-            }));
-            setSplitScenes(scenes);
-          }
-        }).catch(() => {
-          // 静默失败，不影响页面显示
-        });
-      }
+      // 不自动加载 splits 数据，让用户手动点击"生成宫格图"后再显示
     }
   };
 
@@ -234,15 +204,25 @@ const HistoryPanel = () => {
       {/* 头部 */}
       <div className="sidebar-header">
         <span>🕘 历史记录</span>
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={loadHistory}
-          title="刷新"
-          disabled={loading}
-        >
-          {loading ? '...' : '🔄'}
-        </Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={resetWorkflow}
+            title="新建"
+          >
+            ＋
+          </Button>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={loadHistory}
+            title="刷新"
+            disabled={loading}
+          >
+            {loading ? '...' : '🔄'}
+          </Button>
+        </div>
       </div>
 
       {/* 内容区 */}

@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
-import { WorkflowSteps } from '../../store/useWorkflowStore';
 import { useDraggable } from '@dnd-kit/core';
 import Card from '../common/Card';
 import Button from '../common/Button';
@@ -73,7 +72,6 @@ const StepSplit = ({ visible = true }) => {
   const {
     fullScript,
     setFullScript,
-    setCurrentStep,
     setStoryboard,
     setTaskId,
     setSplitScenes,
@@ -88,6 +86,8 @@ const StepSplit = ({ visible = true }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const [refImages, setRefImages] = useState([]);
+  const [editableShots, setEditableShots] = useState([]);
+  const [editableRefPrompt, setEditableRefPrompt] = useState('');
   const taskId = useWorkflowStore(state => state.taskId);
 
   // 自动调整文本框高度
@@ -126,6 +126,13 @@ const StepSplit = ({ visible = true }) => {
         setStoryboard(response.storyboard);
         setTaskId(response.task_id);
 
+        // 初始化可编辑的分镜列表
+        setEditableShots(response.storyboard.shots.map(shot => ({
+          shotNumber: shot.shot_number,
+          angleType: shot.angle_type,
+          promptText: shot.prompt_text
+        })));
+
         // 将 shots 转换为 scenes 格式
         const scenes = response.storyboard.shots.map((shot, index) => ({
           id: shot.shot_number,
@@ -134,10 +141,7 @@ const StepSplit = ({ visible = true }) => {
         }));
         setSplitScenes(scenes);
 
-        // 自动进入下一步
-        setTimeout(() => {
-          setCurrentStep(WorkflowSteps.SCRIPT_REVIEW);
-        }, 500);
+        // 不自动跳转，让用户继续编辑分镜描述
       } else {
         setError(response.error || '生成失败，请重试');
       }
@@ -193,6 +197,28 @@ const StepSplit = ({ visible = true }) => {
     setRefImages(prev => prev.filter(img => img.id !== id));
   };
 
+  // 处理分镜描述修改
+  const handleShotChange = (index, newPromptText) => {
+    setEditableShots(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], promptText: newPromptText };
+      return updated;
+    });
+  };
+
+  // 当 storyboard 变化时，同步 editableShots 和 editableRefPrompt（历史记录加载）
+  useEffect(() => {
+    if (storyboard?.shots && storyboard.shots.length > 0) {
+      setEditableShots(storyboard.shots.map(shot => ({
+        shotNumber: shot.shot_number,
+        angleType: shot.angle_type,
+        promptText: shot.prompt_text
+      })));
+      setEditableRefPrompt(storyboard.reference_control_prompt || '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId]);
+
   // 生成宫格图
   const handleGenerateGrid = async () => {
     if (!storyboard) {
@@ -224,7 +250,18 @@ const StepSplit = ({ visible = true }) => {
         return new File([blob], img.name || `ref_image_${Date.now()}`, { type: mime });
       });
 
-      const response = await generateGrid(storyboard, taskId, refImageFiles);
+      // 创建包含编辑后分镜的 storyboard
+      const updatedStoryboard = {
+        ...storyboard,
+        reference_control_prompt: editableRefPrompt,
+        shots: editableShots.map(shot => ({
+          shot_number: shot.shotNumber,
+          angle_type: shot.angleType,
+          prompt_text: shot.promptText
+        }))
+      };
+
+      const response = await generateGrid(updatedStoryboard, taskId, refImageFiles);
 
       if (response.success) {
         // 保存 splitsImages 到 store
@@ -241,9 +278,6 @@ const StepSplit = ({ visible = true }) => {
       setGridLoading(false);
     }
   };
-
-  // 获取拆分结果
-  const splitResults = useWorkflowStore(state => state.splitScenes);
 
   // 调试日志
   // console.log('[StepSplit] 渲染状态:', {
@@ -323,12 +357,12 @@ const StepSplit = ({ visible = true }) => {
 
           <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
             <Button onClick={handleSplit} disabled={loading} loading={loading}>
-              生成分镜 →
+              生成文本 →
             </Button>
           </div>
 
           {/* 拆分结果区域 - 基于 storyboard 数据判断是否显示 */}
-          {storyboard?.shots?.length > 0 && splitResults.length > 0 && (
+          {/* {storyboard?.shots?.length > 0 && splitResults.length > 0 && (
             <div className="split-results">
               <div className="results-header">
                 <span>生成结果 ({splitResults.length} 个分镜)</span>
@@ -340,25 +374,126 @@ const StepSplit = ({ visible = true }) => {
                 </div>
               ))}
             </div>
+          )} */}
+
+          {/* 可编辑分镜列表 */}
+          {editableShots.length > 0 && (
+            <div style={{ marginTop: '16px' }}>
+              {/* 参考控制提示（可编辑） */}
+              <div style={{
+                marginBottom: '12px'
+              }}>
+                <div style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: 'var(--text-sub)',
+                  marginBottom: '6px'
+                }}>
+                  参考控制提示（可编辑）
+                </div>
+                <textarea
+                  value={editableRefPrompt}
+                  onChange={(e) => setEditableRefPrompt(e.target.value)}
+                  placeholder="输入参考控制提示..."
+                  style={{
+                    width: '100%',
+                    minHeight: '60px',
+                    padding: '10px 12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                    backgroundColor: 'var(--bg-subtle)',
+                    color: 'var(--text)'
+                  }}
+                />
+              </div>
+
+              {/* 分镜描述列表 */}
+              <div style={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                color: 'var(--text-sub)',
+                marginBottom: '8px'
+              }}>
+                分镜描述（可编辑）({editableShots.length} 个分镜)
+              </div>
+              <div style={{
+                maxHeight: '300px',
+                overflowY: 'auto',
+                backgroundColor: 'var(--bg-subtle)',
+                padding: '12px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)'
+              }}>
+                {editableShots.map((shot, index) => (
+                  <div key={index} style={{
+                    marginBottom: index < editableShots.length - 1 ? '12px' : '0',
+                    paddingBottom: index < editableShots.length - 1 ? '12px' : '0',
+                    borderBottom: index < editableShots.length - 1 ? '1px solid var(--border)' : 'none'
+                  }}>
+                    <div style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: 'var(--text-sub)',
+                      marginBottom: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{
+                        backgroundColor: 'var(--accent)',
+                        color: 'white',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem'
+                      }}>
+                        {shot.shotNumber}
+                      </span>
+                      <span>{shot.angleType}</span>
+                    </div>
+                    <textarea
+                      value={shot.promptText}
+                      onChange={(e) => handleShotChange(index, e.target.value)}
+                      style={{
+                        width: '100%',
+                        minHeight: '50px',
+                        padding: '8px',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-xs)',
+                        fontSize: '0.85rem',
+                        fontFamily: 'inherit',
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
-          {/* 参考控制提示卡片 */}
-          {storyboard?.reference_control_prompt && (
-            <div style={{
-              padding: '12px 16px',
-              backgroundColor: 'var(--bg-subtle)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.9rem',
-              color: 'var(--text)',
-              marginTop: '12px',
-              border: '1px solid var(--border)',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-            }}>
-              <div style={{ fontWeight: 600, color: 'var(--text-sub)', marginBottom: '6px' }}>
-                参考控制提示
+          {/* 参考图上传区域 */}
+          {storyboard && (
+            <div style={{ marginTop: '16px' }}>
+              <div style={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                color: 'var(--text-sub)',
+                marginBottom: '8px'
+              }}>
+                参考图上传（可选）
               </div>
-              <div style={{ lineHeight: '1.6' }}>
-                {storyboard.reference_control_prompt}
+              <RefImageDropZone
+                images={refImages}
+                onAdd={handleAddRefImage}
+                onRemove={handleRemoveRefImage}
+                placeholder="点击或拖拽上传宫格生成参考图"
+              />
+              <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                <Button onClick={handleGenerateGrid} disabled={gridLoading} loading={gridLoading}>
+                  {gridLoading ? '生成中...' : '🎨 生成宫格图'}
+                </Button>
               </div>
             </div>
           )}
@@ -397,31 +532,6 @@ const StepSplit = ({ visible = true }) => {
                     />
                   );
                 })}
-              </div>
-            </div>
-          )}
-
-          {/* 参考图上传区域 */}
-          {storyboard && (
-            <div style={{ marginTop: '16px' }}>
-              <div style={{
-                fontSize: '0.9rem',
-                fontWeight: 600,
-                color: 'var(--text-sub)',
-                marginBottom: '8px'
-              }}>
-                参考图上传（可选）
-              </div>
-              <RefImageDropZone
-                images={refImages}
-                onAdd={handleAddRefImage}
-                onRemove={handleRemoveRefImage}
-                placeholder="点击或拖拽上传宫格生成参考图"
-              />
-              <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
-                <Button onClick={handleGenerateGrid} disabled={gridLoading} loading={gridLoading}>
-                  {gridLoading ? '生成中...' : '🎨 生成宫格图'}
-                </Button>
               </div>
             </div>
           )}

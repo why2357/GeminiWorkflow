@@ -310,6 +310,29 @@ const useWorkflowStore = create((set, get) => ({
       promptModalType: null,
       promptConfig: { split: '', shot: '' }
     });
+  },
+
+  /**
+   * 重置工作流（新建任务）
+   * 保留历史记录和已选列表，只重置当前工作内容
+   */
+  resetWorkflow: () => {
+    set({
+      currentStep: WorkflowSteps.SPLIT,
+      fullScript: '',
+      splitScenes: [],
+      selectedScene: null,
+      scenePrompt: '',
+      storyboard: null,
+      taskId: null,
+      splitsImages: [],
+      sceneRefImages: [],
+      scriptRefImages: [],
+      currentImage: null,
+      tiles: [],
+      selectedTileIds: new Set(),
+    });
+    triggerAutoSave(get());
   }
 }));
 

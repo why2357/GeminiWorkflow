@@ -2,7 +2,6 @@ import React from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { WorkflowSteps } from '../../store/useWorkflowStore';
 import StepSplit from './StepSplit';
-import StepScriptReview from './StepScriptReview';
 import StepResults from './StepResults';
 import './WorkflowStream.css';
 
@@ -12,7 +11,6 @@ const WorkflowStream = () => {
   // 根据当前步骤确定哪些步骤应该显示
   const stepOrder = [
     WorkflowSteps.SPLIT,
-    WorkflowSteps.SCRIPT_REVIEW,
     WorkflowSteps.RESULTS
   ];
 
@@ -29,7 +27,6 @@ const WorkflowStream = () => {
   return (
     <div className="chat-stream">
       <StepSplit visible={isStepVisible(WorkflowSteps.SPLIT)} />
-      <StepScriptReview visible={isStepVisible(WorkflowSteps.SCRIPT_REVIEW)} />
       <StepResults visible={isStepVisible(WorkflowSteps.RESULTS)} />
     </div>
   );

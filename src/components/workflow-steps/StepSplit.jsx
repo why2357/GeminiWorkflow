@@ -395,37 +395,6 @@ const StepSplit = ({ visible = true }) => {
           {/* 可编辑分镜列表 */}
           {editableShots.length > 0 && (
             <div style={{ marginTop: '16px' }}>
-              {/* 参考控制提示（可编辑） */}
-              <div style={{
-                marginBottom: '12px'
-              }}>
-                <div style={{
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  color: 'var(--text-sub)',
-                  marginBottom: '6px'
-                }}>
-                  参考控制提示（可编辑）
-                </div>
-                <textarea
-                  value={editableRefPrompt}
-                  onChange={(e) => setEditableRefPrompt(e.target.value)}
-                  placeholder="输入参考控制提示..."
-                  style={{
-                    width: '100%',
-                    minHeight: '60px',
-                    padding: '10px 12px',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.9rem',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                    backgroundColor: 'var(--bg-subtle)',
-                    color: 'var(--text)'
-                  }}
-                />
-              </div>
-
               {/* 分镜描述列表 */}
               <div style={{
                 fontSize: '0.9rem',
@@ -433,7 +402,7 @@ const StepSplit = ({ visible = true }) => {
                 color: 'var(--text-sub)',
                 marginBottom: '8px'
               }}>
-                分镜描述（可编辑）({editableShots.length} 个分镜)
+                分镜描述({editableShots.length} 个分镜)
               </div>
               <div style={{
                 maxHeight: '50vh',
@@ -441,7 +410,8 @@ const StepSplit = ({ visible = true }) => {
                 backgroundColor: 'var(--bg-subtle)',
                 padding: '12px',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border)'
+                border: '1px solid var(--border)',
+                marginBottom: '12px'
               }}>
                 {editableShots.map((shot, index) => (
                   <div key={index} style={{
@@ -486,6 +456,35 @@ const StepSplit = ({ visible = true }) => {
                     />
                   </div>
                 ))}
+              </div>
+
+              {/* 参考控制提示（可编辑） */}
+              <div>
+                <div style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: 'var(--text-sub)',
+                  marginBottom: '6px'
+                }}>
+                  参考控制提示（可编辑）
+                </div>
+                <textarea
+                  value={editableRefPrompt}
+                  onChange={(e) => setEditableRefPrompt(e.target.value)}
+                  placeholder="输入参考控制提示..."
+                  style={{
+                    width: '100%',
+                    minHeight: '60px',
+                    padding: '10px 12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                    backgroundColor: 'var(--bg-subtle)',
+                    color: 'var(--text)'
+                  }}
+                />
               </div>
             </div>
           )}

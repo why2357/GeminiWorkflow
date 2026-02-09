@@ -26,6 +26,9 @@ npm run preview  # Preview production build
 
 ### Backend
 
+
+
+
 ```bash
 cd 25ge
 python main.py   # Start FastAPI server on port 8025

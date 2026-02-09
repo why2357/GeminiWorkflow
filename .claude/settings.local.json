@@ -15,7 +15,8 @@
       "mcp__chrome-devtools__new_page",
       "Bash(npm run lint:*)",
       "Bash(npx eslint:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(grep:*)"
     ]
   }
 }

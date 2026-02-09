@@ -1,0 +1,144 @@
+/* ==================== 按照宫格.html样式 ==================== */
+
+/* Modal Overlay - 模态框遮罩层 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal - 模态框主体 */
+.modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  transition: transform 0.2s;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+/* Modal Size Variants */
+.modal-sm {
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-md {
+  width: 600px;
+  max-width: 90%;
+}
+
+.modal-lg {
+  width: 800px;
+  max-width: 90%;
+}
+
+.modal-full {
+  width: 95%;
+  height: 90vh;
+}
+
+/* Modal Header - 模态框头部 */
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Modal Body - 模态框内容区 */
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Modal Footer - 模态框底部 */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8fafc;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  flex-shrink: 0;
+}
+
+/* Close Button - 关闭按钮 */
+.modal-header .danger-ghost {
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+/* ==================== 响应式设计 ==================== */
+
+/* 移动设备 (< 768px) */
+@media (max-width: 768px) {
+  .modal {
+    width: 95%;
+    max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+}
+
+/* 超小屏幕 (< 480px) */
+@media (max-width: 480px) {
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 10px 12px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+}

@@ -1,3 +1,5 @@
+/* ==================== 按照宫格.html样式 ==================== */
+
 /* 清除默认样式，让 App.css 控制布局 */
 * {
   margin: 0;
@@ -11,9 +13,288 @@ body {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
 }
 
 #root {
   width: 100%;
   height: 100%;
+}
+
+/* ==================== CSS变量系统 - 按照宫格.html ==================== */
+:root {
+  /* 现代调色板 (Slate & Indigo) */
+  --primary: #6366f1; /* 主色调 Indigo-500 */
+  --primary-hover: #4f46e5; /* Indigo-600 */
+  --bg-body: #f8fafc; /* Slate-50 */
+  --bg-card: #ffffff; /* White */
+  --bg-subtle: #f1f5f9; /* Slate-100 */
+  --text-main: #1e293b; /* Slate-800 */
+  --text: #1e293b; /* Slate-800 - alias for --text-main */
+  --text-sub: #64748b; /* Slate-500 */
+  --border: #e2e8f0; /* Slate-200 */
+  --accent: #6366f1; /* Indigo-500 */
+  --input-bg: #f1f5f9; /* Slate-100 */
+  --success: #10b981; /* Emerald */
+  --danger: #ef4444; /* Red */
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* ==================== 通用按钮样式 - 按照宫格.html ==================== */
+button {
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+button.primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+button.primary:hover {
+  background-color: var(--primary-hover);
+}
+
+button.secondary {
+  background-color: white;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+button.secondary:hover {
+  background-color: var(--input-bg);
+}
+
+button.danger-ghost {
+  background: transparent;
+  color: var(--text-sub);
+  padding: 4px;
+}
+
+button.danger-ghost:hover {
+  color: var(--danger);
+  background: #fee2e2;
+}
+
+/* ==================== 卡片样式 - 按照宫格.html ==================== */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.card.flex-grow {
+  flex-grow: 1;
+  min-height: 400px;
+}
+
+.card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  background: #fafafa;
+}
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-right: 12px;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== 输入框样式 - 按照宫格.html ==================== */
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--input-bg);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  box-sizing: border-box;
+  resize: vertical;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--primary);
+  background: white;
+}
+
+/* ==================== 代码块样式 - 按照宫格.html ==================== */
+.code-block {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 0.85rem;
+  margin-top: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  display: none;
+  border: 1px solid #334155;
+}
+
+/* ==================== 徽章样式 - 按照宫格.html ==================== */
+.badge {
+  background: #e0e7ff;
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== 脚本项目样式 - 按照宫格.html ==================== */
+.script-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+.script-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.shot-badge {
+  background: #e0e7ff;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  height: fit-content;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.script-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.script-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  resize: none;
+  overflow-y: hidden;
+  font-family: inherit;
+  background: #f8fafc;
+}
+
+.script-textarea:focus {
+  background: white;
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ==================== 会话项目样式 - 按照宫格.html ==================== */
+.session-item {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.session-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.session-item.active {
+  border-color: var(--primary);
+  ring: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.session-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  background: #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.session-info {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-meta {
+  color: var(--text-sub);
+  font-size: 0.75rem;
 }

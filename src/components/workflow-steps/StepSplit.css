@@ -171,3 +171,20 @@
   box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
   z-index: 0;
 }
+
+/* ==================== 拖拽样式 - 按照宫格.html ==================== */
+
+/* 拖拽幽灵元素 */
+.split-image-container.sortable-ghost {
+  opacity: 1 !important;
+  background: #f1f5f9 !important;
+  border: 2px dashed var(--primary) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.split-image-container.sortable-ghost img {
+  opacity: 0.5 !important;
+  visibility: visible !important;
+  filter: grayscale(100%) !important;
+}

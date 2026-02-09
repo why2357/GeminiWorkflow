@@ -7,9 +7,11 @@ import ChatMessage from './ChatMessage';
 import RefImageDropZone from './RefImageDropZone';
 import { generateShots, generateGrid } from '../../services/api';
 import Loading from '../common/Loading';
+import ShotsEditModal from '../ShotsEditModal';
+import GridDisplayModal from '../GridDisplayModal';
 import './StepSplit.css';
 
-// 可拖拽的分镜图片组件（支持在网格内重排序）
+// 可拖拽的分镜图片组件（支持在网格内重排序）- 按照宫格.html样式
 const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, onToggleExclude }) => {
   const {
     attributes,
@@ -42,10 +44,11 @@ const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, 
 
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    opacity: isDragging ? 0 : 1, // 拖拽时完全隐藏原始元素，由 DragOverlay 显示预览
+    // 按照宫格.html样式：拖拽时原位置保持完全可见（显示ghost效果）
+    opacity: 1,
     cursor: isDragging ? 'grabbing' : 'grab',
     zIndex: isDragging ? 1000 : 'auto',
-    transition: isDragging ? 'none' : 'transform 0.2s ease, opacity 0.2s ease'
+    transition: isDragging ? 'none' : 'transform 0.2s ease'
   };
 
   const handleClick = () => {
@@ -57,7 +60,7 @@ const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, 
   return (
     <div
       ref={setRefs}
-      className={`split-image-container ${isExcluded ? 'is-grayscaled' : ''}`}
+      className={`split-image-container ${isExcluded ? 'is-grayscaled' : ''} ${isDragging ? 'sortable-ghost' : ''}`}
       style={{
         aspectRatio: '16 / 9',
         backgroundColor: 'var(--border)',
@@ -123,8 +126,25 @@ const StepSplit = ({ visible = true }) => {
   const [refImages, setRefImages] = useState([]);
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
-  const [excludedImageIds, setExcludedImageIds] = useState(new Set()); // 跟踪被排除（变灰）的图片原始索引
-  const gridImageInputRef = useRef(null); // 本地导入宫格图的 ref
+  const [excludedImageIds, setExcludedImageIds] = useState(new Set());
+  const gridImageInputRef = useRef(null);
+
+  // 模态框状态
+  const [shotsEditModalOpen, setShotsEditModalOpen] = useState(false);
+  const [gridDisplayModalOpen, setGridDisplayModalOpen] = useState(false);
+
+  // 监听自定义事件，打开宫格展示模态框
+  useEffect(() => {
+    const handleOpenGridModal = () => {
+      setGridDisplayModalOpen(true);
+    };
+
+    window.addEventListener('openGridModal', handleOpenGridModal);
+
+    return () => {
+      window.removeEventListener('openGridModal', handleOpenGridModal);
+    };
+  }, []);
 
   // 切换图片排除状态（使用原始索引）
   const handleToggleExclude = (originalIndex) => {
@@ -160,6 +180,24 @@ const StepSplit = ({ visible = true }) => {
 
   // 计算未被排除的图片数量
   const selectedCount = reorderedSplitsImages ? reorderedSplitsImages.length - excludedImageIds.size : 0;
+
+  // 打开分镜编辑模态框
+  const handleOpenShotsEditModal = () => {
+    if (!storyboard) {
+      setError('请先生成分镜脚本');
+      return;
+    }
+    setShotsEditModalOpen(true);
+  };
+
+  // 打开宫格展示模态框
+  const handleOpenGridDisplayModal = () => {
+    if (!splitsImages || splitsImages.length === 0) {
+      setError('请先生成宫格图');
+      return;
+    }
+    setGridDisplayModalOpen(true);
+  };
 
   // 当 splitsImages 变化时，重置排除状态并同步到本地状态
   useEffect(() => {
@@ -509,10 +547,27 @@ const StepSplit = ({ visible = true }) => {
             </div>
           )}
 
-          <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
             <Button onClick={handleSplit} disabled={loading} loading={loading}>
               生成文本 →
             </Button>
+            {/* {storyboard?.shots?.length > 0 && (
+              <Button
+                variant="secondary"
+                onClick={() => setShotsEditModalOpen(true)}
+              >
+                📝 编辑分镜脚本
+              </Button>
+            )} */}
+            {/* {splitsImages?.length > 0 && (
+              <Button
+                variant="primary"
+                onClick={() => setGridDisplayModalOpen(true)}
+                style={{ background: 'var(--success)' }}
+              >
+                🖼️ 查看宫格画面
+              </Button>
+            )} */}
           </div>
 
           {/* 拆分结果区域 - 基于 storyboard 数据判断是否显示 */}
@@ -720,6 +775,18 @@ const StepSplit = ({ visible = true }) => {
           )}
         </Card.Body>
       </Card>
+
+      {/* 分镜编辑模态框 */}
+      <ShotsEditModal
+        open={shotsEditModalOpen}
+        onClose={() => setShotsEditModalOpen(false)}
+      />
+
+      {/* 宫格展示模态框 */}
+      <GridDisplayModal
+        open={gridDisplayModalOpen}
+        onClose={() => setGridDisplayModalOpen(false)}
+      />
     </ChatMessage>
   );
 };

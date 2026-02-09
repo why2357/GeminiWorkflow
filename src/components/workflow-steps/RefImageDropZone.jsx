@@ -27,16 +27,15 @@ const SortableImageItem = ({ image, onRemove }) => {
       ref={setNodeRef}
       style={style}
       className="ref-image-item"
-      {...attributes}
-      {...listeners}
     >
-      <img src={image.src} alt={image.name} />
+      <img src={image.src} alt={image.name} {...attributes} {...listeners} style={{ cursor: 'grab', pointerEvents: isDragging ? 'none' : 'auto' }} />
       <button
         className="ref-image-delete"
         onClick={(e) => {
           e.stopPropagation();
           onRemove?.(image.id);
         }}
+        style={{ pointerEvents: 'auto' }}
       >
         ×
       </button>

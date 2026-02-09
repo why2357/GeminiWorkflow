@@ -242,6 +242,15 @@ const useWorkflowStore = create((set, get) => ({
     triggerAutoSave({ ...state, ...newState });
     return newState;
   }),
+  // 在指定位置插入 - 按照宫格.html样式，支持中间插入
+  insertIntoSelectedList: (item, index) => set((state) => {
+    const newList = [...state.globalSelectedList];
+    newList.splice(index, 0, item);
+    const newState = { globalSelectedList: newList };
+    set(newState);
+    triggerAutoSave({ ...state, ...newState });
+    return newState;
+  }),
   removeFromSelectedList: (instanceId) => set((state) => {
     const newState = { globalSelectedList: state.globalSelectedList.filter(item => item.instanceId !== instanceId) };
     set(newState);

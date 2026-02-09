@@ -1,12 +1,19 @@
-/* 面板容器 */
+/* 面板容器 - 按照宫格.html样式 */
 .selected-list-panel {
   height: 100%;
   display: flex;
   flex-direction: column;
   background: white;
+  transition: all 0.3s ease; /* 添加过渡效果 */
 }
 
-/* 头部 */
+/* 拖拽时的面板边框效果 - 按照宫格.html样式 */
+.selected-list-panel.panel-dragging {
+  border: 2px solid #a855f7 !important; /* 紫色边框 */
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1) !important; /* 紫色外发光效果 */
+}
+
+/* 头部 - 按照宫格.html样式 */
 .selected-list-panel .sidebar-header {
   padding: 16px;
   background: #f8fafc;
@@ -20,10 +27,22 @@
   gap: 8px;
 }
 
-/* 内容区 */
+/* 徽章样式 - 按照宫格.html样式 */
+.badge {
+  background: #e0e7ff;
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 内容区 - 按照宫格.html样式 */
 .selected-list-panel .sidebar-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   padding: 0;
   background: #f1f5f9;
 }
@@ -41,7 +60,11 @@
   border-radius: 3px;
 }
 
-/* 底部 */
+.selected-list-panel .sidebar-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* 底部 - 按照宫格.html样式 */
 .selected-list-panel .sidebar-footer {
   padding: 12px;
   background: white;
@@ -49,15 +72,13 @@
   flex-shrink: 0;
 }
 
-/* 已选列表容器 */
+/* 已选列表容器 - 按照宫格.html样式 */
 .selected-list {
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  display: block;
 }
 
-/* 已选项 */
+/* 已选项 - 按照宫格.html样式（关键修改） */
 .selected-item {
   position: relative;
   background: white;
@@ -66,11 +87,16 @@
   box-shadow: none;
   border: none;
   border-bottom: 1px solid white;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   display: block;
+  margin-bottom: 0;
 }
 
-/* 拖拽区域 */
+.selected-item:hover .selected-item-delete {
+  opacity: 1;
+}
+
+/* 拖拽区域 - 按照宫格.html样式 */
 .selected-item-drag {
   position: relative;
   cursor: grab;
@@ -81,101 +107,208 @@
   cursor: grabbing;
 }
 
-.selected-item:hover {
-  box-shadow: none;
+/* 图片框架 - 按照宫格.html样式 */
+.selected-item-frame {
+  width: 100%;
+  background: #000;
+  height: auto;
+  min-height: 0;
+  display: block;
+  line-height: 0;
 }
 
-/* 序号 */
-.selected-item-number {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 24px;
-  height: 24px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* 图片 */
+.selected-item-frame img,
 .selected-item-image {
   width: 100%;
   height: auto;
   display: block;
+  vertical-align: top;
+  border: none;
+  margin: 0;
+  padding: 0;
   object-fit: cover;
   aspect-ratio: 16 / 9;
-  border-radius: 0;
   pointer-events: none;
 }
 
-/* 角标 */
+/* 序号 - 按照宫格.html样式 */
+.selected-item-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* 角标 - 按照宫格.html样式 */
 .selected-item-badge {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: var(--primary);
+  bottom: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
   pointer-events: none;
 }
 
-/* 删除按钮 */
+/* 删除按钮 - 按照宫格.html样式 */
 .selected-item-delete {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 20px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ef4444;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.2s;
+  font-size: 20px;
+  font-weight: bold;
   cursor: pointer;
-  z-index: 3;
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: none;
 }
 
-.selected-item:hover .selected-item-delete {
-  opacity: 1;
+.selected-item-delete:hover {
+  background: #fff;
+  transform: scale(1.1);
+  color: #dc2626;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* 拖拽时的样式 */
+/* 拖拽时的样式 - 按照宫格.html样式 */
 .selected-item-drag.dragging {
   opacity: 0.5;
 }
 
-/* 空状态提示 */
+/* 拖拽幽灵元素 - 按照宫格.html样式 */
+.sortable-ghost {
+  opacity: 1 !important;
+  background: #f1f5f9 !important;
+  border: 2px dashed var(--primary) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.sortable-ghost img,
+.sortable-ghost .selected-item-number,
+.sortable-ghost .selected-item-badge {
+  opacity: 0.5 !important;
+  visibility: visible !important;
+  filter: grayscale(100%) !important;
+}
+
+/* 拖拽中元素 - 按照宫格.html样式 */
+.sortable-drag {
+  cursor: grabbing;
+  opacity: 1 !important;
+  z-index: 9999;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary);
+  pointer-events: none !important;
+  transition: none !important;
+}
+
+/* 拖拽高亮区域 - 按照宫格.html样式，紫色主题 */
+.highlight-drop-zone {
+  background-color: #f3e8ff !important; /* 淡紫色背景 */
+  box-shadow: inset 0 0 0 2px #a855f7 !important; /* 紫色边框 */
+  transition: all 0.3s ease;
+}
+
+/* 空状态提示 - 按照宫格.html样式 */
 .sidebar-empty {
   text-align: center;
-  color: var(--text-sub);
-  padding: 32px 20px;
-  font-size: 0.9rem;
+  color: #94a3b8;
+  padding: 20px;
+  font-size: 0.85rem;
   line-height: 1.8;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 200px;
+  pointer-events: none;
 }
 
-.sidebar-empty::before {
-  content: '📋';
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-  opacity: 0.6;
+/* 底部按钮组 - 按照宫格.html样式 */
+.sidebar-footer {
+  display: flex;
+  gap: 8px;
+}
+
+.sidebar-footer .btn {
+  flex: 1;
+  padding: 8px 16px;
+}
+
+/* ==================== 插入指示器 - 按照宫格.html样式 ==================== */
+
+/* 列表项包装器 - 用于定位插入指示器 */
+.selected-item-wrapper {
+  position: relative;
+}
+
+/* 插入指示器 - 按照宫格.html样式 */
+.insert-indicator {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+  z-index: 1000;
+  animation: insertPulse 1s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+}
+
+/* 插入指示器位置 - 在项目上方 */
+.insert-indicator.insert-before {
+  top: -2px;
+}
+
+/* 插入指示器位置 - 在项目下方 */
+.insert-indicator.insert-after {
+  bottom: -2px;
+}
+
+/* 插入指示器脉冲动画 - 按照宫格.html样式 */
+@keyframes insertPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scaleX(0.95);
+  }
+}
+
+/* 拖拽目标高亮 - 按照宫格.html样式 */
+.drop-target {
+  position: relative;
+}
+
+.drop-target::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(99, 102, 241, 0.05);
+  pointer-events: none;
+  border-radius: var(--radius-sm);
 }

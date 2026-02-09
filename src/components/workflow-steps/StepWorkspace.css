@@ -1,22 +1,38 @@
-/* 上传区域 */
+/* ==================== 按照宫格.html样式 ==================== */
+
+/* 上传区域 - 按照宫格.html样式 */
 .upload-zone {
-  height: 100%;
-  min-height: 400px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  background: #fdfdfd;
+  transition: all 0.2s;
+  position: relative;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  background: #fafafa;
-  border: 2px dashed var(--border);
-  cursor: pointer;
+  align-items: center;
+  min-height: 400px;
 }
 
 .upload-zone:hover {
   border-color: var(--primary);
-  background: #f1f5f9;
+  background: #f0fdfa;
 }
 
-/* 加载区域 */
+.upload-zone input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* 加载区域 - 按照宫格.html样式 */
 .loading-zone {
   height: 100%;
   min-height: 400px;
@@ -25,7 +41,7 @@
   justify-content: center;
 }
 
-/* 错误覆盖层 */
+/* 错误覆盖层 - 按照宫格.html样式 */
 .error-overlay {
   position: absolute;
   top: 0;
@@ -44,91 +60,118 @@
   padding: 32px;
 }
 
-/* 网格容器 */
+/* 网格容器 - 按照宫格.html样式 */
 .grid-container {
-  height: 100%;
-  min-height: 400px;
-  padding: 24px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* 交互式网格 */
+/* 交互式网格 - 按照宫格.html样式 */
 .interactive-grid {
   display: grid;
-  gap: 2px;
-  width: 100%;
-  max-width: 600px;
-  aspect-ratio: 16 / 9;
-  background: var(--border);
-  border: 2px solid var(--border);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  background: #e2e8f0;
+  padding: 4px;
   border-radius: var(--radius-md);
-  overflow: hidden;
 }
 
-/* 切片图块 */
+/* 切片图块 - 按照宫格.html样式 */
 .tile {
   position: relative;
-  background-color: #f1f5f9;
+  aspect-ratio: 16/9;
+  cursor: grab;
+  overflow: hidden;
+  border-radius: 4px;
+  background: white;
+  transition: all 0.2s ease;
+  user-select: none;
   background-repeat: no-repeat;
-  cursor: pointer;
-  transition: all 0.2s;
-  aspect-ratio: 16 / 9;
-  /* 默认状态：正常显示 */
-  filter: grayscale(0%);
+}
+
+.tile:active {
+  cursor: grabbing;
+}
+
+/* 选中的图块 - 按照宫格.html样式 */
+.tile.is-selected {
   opacity: 1;
+  filter: grayscale(0%);
+  border: 2px solid var(--primary);
+  z-index: 1;
+}
+
+/* 忽略的图块 - 按照宫格.html样式 */
+.tile.is-ignored {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  transform: scale(0.95);
+  border: 2px solid transparent;
+}
+
+/* React版本使用.selected类名 */
+.tile.selected {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  transform: scale(0.95);
+  border: 2px solid transparent;
 }
 
 .tile:hover {
   z-index: 1;
-  transform: scale(1.02);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* 选中的图块：变灰 */
-.tile.selected {
-  filter: grayscale(100%);
-  opacity: 0.5;
-}
-
-/* 切片序号 */
-.tile-number {
+/* 切片序号 - 按照宫格.html样式 */
+.tile-number,
+.tile-badge {
   position: absolute;
   top: 4px;
   left: 4px;
-  width: 20px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
   pointer-events: none;
 }
 
-/* 选中标记 */
-.tile-check {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
-  background: var(--primary);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5);
+/* 拖拽幽灵元素 - 按照宫格.html样式 */
+.sortable-ghost {
+  opacity: 1 !important;
+  background: #f1f5f9 !important;
+  border: 2px dashed var(--primary) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
+.sortable-ghost img,
+.sortable-ghost .tile-badge {
+  opacity: 0.5 !important;
+  visibility: visible !important;
+  filter: grayscale(100%) !important;
+}
+
+/* 拖拽中元素 - 按照宫格.html样式 */
+.sortable-drag {
+  cursor: grabbing;
+  opacity: 1 !important;
+  z-index: 9999;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary);
+  pointer-events: none !important;
+  transition: none !important;
+}
+
+/* 拖拽高亮区域 - 按照宫格.html样式 */
+.highlight-drop-zone {
+  background-color: #f0fdfa !important;
+  box-shadow: inset 0 0 0 2px var(--primary);
+  transition: all 0.3s ease;
+}
+
+/* 聊天气泡宽度 - 按照宫格.html样式 */
 .chat-bubble {
   width: 100%;
 }
@@ -147,7 +190,12 @@
   }
 
   .interactive-grid {
-    max-width: 100%;
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .upload-zone {
+    min-height: 300px;
   }
 }
 
@@ -155,6 +203,7 @@
 @media (max-width: 768px) {
   .upload-zone {
     min-height: 250px;
+    padding: 20px;
   }
 
   .grid-container {
@@ -163,17 +212,17 @@
   }
 
   .interactive-grid {
-    border-width: 1px;
-  }
-
-  .tile-check {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    gap: 2px;
+    padding: 2px;
   }
 
   .chat-bubble.flex-grow {
     min-height: 350px;
+  }
+
+  .tile-badge {
+    font-size: 8px;
+    padding: 1px 4px;
   }
 }
 
@@ -181,6 +230,7 @@
 @media (max-width: 480px) {
   .upload-zone {
     min-height: 200px;
+    padding: 16px;
   }
 
   .grid-container {
@@ -188,13 +238,17 @@
     padding: 8px;
   }
 
-  .tile-check {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
+  .interactive-grid {
+    gap: 1px;
+    padding: 2px;
   }
 
   .chat-bubble.flex-grow {
     min-height: 280px;
+  }
+
+  .tile-badge {
+    font-size: 7px;
+    padding: 1px 3px;
   }
 }

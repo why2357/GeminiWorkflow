@@ -1,4 +1,4 @@
-/* 主布局容器 - 三栏网格布局 */
+/* 主布局容器 - 三栏网格布局 - 按照宫格.html样式 */
 .app-layout {
   display: grid;
   grid-template-columns: 280px 1fr 280px;
@@ -7,7 +7,7 @@
   height: calc(100vh - 60px);
 }
 
-/* 侧边栏通用样式 */
+/* 侧边栏通用样式 - 按照宫格.html样式 */
 .sidebar {
   background: white;
   display: flex;
@@ -21,7 +21,7 @@
   border-left: 1px solid var(--border);
 }
 
-/* 侧边栏头部 */
+/* 侧边栏头部 - 按照宫格.html样式 */
 .sidebar-header {
   padding: 16px;
   background: #f8fafc;
@@ -34,16 +34,16 @@
   flex-shrink: 0;
 }
 
-/* 侧边栏内容区 */
+/* 侧边栏内容区 - 按照宫格.html样式 */
 .sidebar-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll; /* 强制使用scrollbar */
   padding: 0;
   background: #f1f5f9;
   display: block;
 }
 
-/* 自定义滚动条 - 侧边栏 */
+/* 自定义滚动条 - 侧边栏 - 按照宫格.html样式 */
 .sidebar-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -61,7 +61,7 @@
   background-color: #94a3b8;
 }
 
-/* 侧边栏底部 */
+/* 侧边栏底部 - 按照宫格.html样式 */
 .sidebar-footer {
   padding: 12px;
   background: white;
@@ -69,7 +69,7 @@
   flex-shrink: 0;
 }
 
-/* 中间列样式 */
+/* 中间列样式 - 按照宫格.html样式 */
 .center-column {
   display: flex;
   flex-direction: column;
@@ -77,10 +77,17 @@
   padding: 24px;
   gap: 24px;
   background: var(--bg-body);
-  min-height: 400px;
 }
 
-/* 滚动条样式 - 中间区域 */
+/* 聊天流样式 - 按照宫格.html样式 */
+.chat-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 60px;
+}
+
+/* 滚动条样式 - 中间区域 - 按照宫格.html样式 */
 .center-column::-webkit-scrollbar {
   width: 8px;
 }

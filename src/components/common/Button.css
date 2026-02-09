@@ -74,6 +74,19 @@
   border-color: #cbd5e1;
 }
 
+/* 轮廓按钮 */
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-outline:hover:not(.btn-disabled) {
+  background: var(--primary-hover);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
 /* 危险幽灵按钮 */
 .btn-danger-ghost {
   background: transparent;

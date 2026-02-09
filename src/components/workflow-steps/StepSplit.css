@@ -157,3 +157,17 @@
 .scene-result-item button {
   margin-top: 8px;
 }
+
+/* 分镜图片容器 */
+.split-image-container {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* 变灰的图片样式 */
+.split-image-container.is-grayscaled {
+  transform: scale(0.9);
+  border: 2px solid #a855f7 !important; /* 紫色边框 */
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+  z-index: 0;
+}

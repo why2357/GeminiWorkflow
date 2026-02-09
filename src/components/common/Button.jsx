@@ -4,7 +4,7 @@ import './Button.css';
 // 按钮变体
 const Button = ({
   children,
-  variant = 'primary',    // primary | secondary | danger-ghost
+  variant = 'primary',    // primary | secondary | danger-ghost | outline
   size = 'medium',        // small | medium | large
   onClick,
   disabled = false,

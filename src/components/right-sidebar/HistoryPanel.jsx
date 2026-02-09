@@ -3,6 +3,7 @@ import { useWorkflowStore, WorkflowSteps } from '../../store/useWorkflowStore';
 import Button from '../common/Button';
 import { getHistory, getTaskGridImage, getTaskSplitImages, restoreTaskFromHistory } from '../../services/api';
 import Loading from '../common/Loading';
+import { imageCache } from '../../utils/imageCache';
 import './HistoryPanel.css';
 
 const HistoryPanel = () => {
@@ -185,6 +186,89 @@ const HistoryPanel = () => {
 
   // 处理会话/历史记录点击
   const handleSessionClick = async (session) => {
+    // 打印卡片数据
+    console.log('========== 点击历史记录卡片 ==========');
+    console.log('📋 卡片数据 (session):', {
+      id: session.id,
+      name: session.name,
+      timestamp: session.timestamp,
+      tiles: session.tiles,
+      taskId: session.taskId,
+      storyboard: session.storyboard,
+      script: session.script,
+      hasGridImage: session.hasGridImage,
+      hasGrid: session.hasGrid,
+      hasSplits: session.hasSplits
+    });
+
+    // 打印对应的 IndexedDB 数据
+    if (session.taskId && imageCache.db) {
+      try {
+        await imageCache.init();
+
+        // 获取该任务的 grid 缓存
+        const gridCache = await imageCache._getRawCacheItem('grid', 'default', session.taskId);
+        console.log('🗄️ IndexedDB - grid 缓存:', gridCache ? {
+          key: gridCache.key,
+          type: gridCache.type,
+          clientId: gridCache.clientId,
+          taskId: gridCache.taskId,
+          size: gridCache.size,
+          timestamp: new Date(gridCache.timestamp).toLocaleString(),
+          expiry: new Date(gridCache.expiry).toLocaleString(),
+          etag: gridCache.etag,
+          version: gridCache.version,
+          isExpired: Date.now() > gridCache.expiry,
+          dataPreview: {
+            hasGridImage: !!gridCache.data?.grid_image,
+            gridImageLength: gridCache.data?.grid_image?.length || 0
+          }
+        } : '无 grid 缓存');
+
+        // 获取该任务的 splits 缓存
+        const splitsCache = await imageCache._getRawCacheItem('splits', 'default', session.taskId);
+        console.log('🗄️ IndexedDB - splits 缓存:', splitsCache ? {
+          key: splitsCache.key,
+          type: splitsCache.type,
+          clientId: splitsCache.clientId,
+          taskId: splitsCache.taskId,
+          size: splitsCache.size,
+          timestamp: new Date(splitsCache.timestamp).toLocaleString(),
+          expiry: new Date(splitsCache.expiry).toLocaleString(),
+          etag: splitsCache.etag,
+          version: splitsCache.version,
+          isExpired: Date.now() > splitsCache.expiry,
+          dataPreview: {
+            hasSplitImages: !!splitsCache.data?.split_images,
+            splitImagesCount: splitsCache.data?.split_images?.length || 0
+          }
+        } : '无 splits 缓存');
+
+        // 获取所有缓存项
+        const allItems = await new Promise((resolve) => {
+          const transaction = imageCache.db.transaction(['images'], 'readonly');
+          const store = transaction.objectStore('images');
+          const request = store.getAll();
+
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => resolve([]);
+        });
+
+        console.log('🗄️ IndexedDB - 所有缓存项:', allItems.map(item => ({
+          key: item.key,
+          type: item.type,
+          taskId: item.taskId,
+          size: item.size,
+          timestamp: new Date(item.timestamp).toLocaleString()
+        })));
+
+      } catch (err) {
+        console.error('读取 IndexedDB 失败:', err);
+      }
+    }
+
+    console.log('======================================');
+
     setActiveSession(session.id);
 
     // 如果是 API 任务（有 taskId），恢复到工作流

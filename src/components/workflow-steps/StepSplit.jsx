@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
-import {
-  SortableContext,
-  useSortable
-} from '@dnd-kit/sortable';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import ChatMessage from './ChatMessage';
@@ -19,10 +16,8 @@ const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, 
     listeners,
     setNodeRef,
     transform,
-    transition,
-    isDragging,
-    isSorting
-  } = useSortable({
+    isDragging
+  } = useDraggable({
     id: `split-image-${index}`,
     data: {
       id: `split-image-${index}`,
@@ -35,11 +30,22 @@ const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, 
     }
   });
 
+  const { setNodeRef: setDroppableRef } = useDroppable({
+    id: `split-image-${index}`
+  });
+
+  // 合并两个 ref
+  const setRefs = (node) => {
+    setNodeRef(node);
+    setDroppableRef(node);
+  };
+
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    cursor: isSorting ? 'grabbing' : 'grab'
+    opacity: isDragging ? 0 : 1, // 拖拽时完全隐藏原始元素，由 DragOverlay 显示预览
+    cursor: isDragging ? 'grabbing' : 'grab',
+    zIndex: isDragging ? 1000 : 'auto',
+    transition: isDragging ? 'none' : 'transform 0.2s ease, opacity 0.2s ease'
   };
 
   const handleClick = () => {
@@ -50,7 +56,7 @@ const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, 
 
   return (
     <div
-      ref={setNodeRef}
+      ref={setRefs}
       className={`split-image-container ${isExcluded ? 'is-grayscaled' : ''}`}
       style={{
         aspectRatio: '16 / 9',
@@ -104,7 +110,8 @@ const StepSplit = ({ visible = true }) => {
     storyboard,
     splitsImages,
     reorderedSplitsImages,
-    setReorderedSplitsImages
+    setReorderedSplitsImages,
+    setSplitsImages
   } = useWorkflowStore();
 
   const [loading, setLoading] = useState(false);
@@ -117,6 +124,7 @@ const StepSplit = ({ visible = true }) => {
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
   const [excludedImageIds, setExcludedImageIds] = useState(new Set()); // 跟踪被排除（变灰）的图片原始索引
+  const gridImageInputRef = useRef(null); // 本地导入宫格图的 ref
 
   // 切换图片排除状态（使用原始索引）
   const handleToggleExclude = (originalIndex) => {
@@ -374,13 +382,64 @@ const StepSplit = ({ visible = true }) => {
     }
   };
 
-  // 调试日志
-  // console.log('[StepSplit] 渲染状态:', {
-  //   splitsImages,
-  //   splitsImagesLength: splitsImages?.length,
-  //   storyboard,
-  //   splitResults
-  // });
+  // 本地导入宫格图 - 将一张宫格图切割成25张单独的图片
+  const handleLocalGridImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('请选择图片文件');
+      return;
+    }
+
+    setError(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 计算每个小图的尺寸
+        const rows = 5;
+        const cols = 5;
+        const tileWidth = img.width / cols;
+        const tileHeight = img.height / rows;
+
+        const splitImages = [];
+
+        // 切割宫格图为25张图片
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            canvas.width = tileWidth;
+            canvas.height = tileHeight;
+
+            ctx.drawImage(
+              img,
+              col * tileWidth, row * tileHeight, tileWidth, tileHeight,
+              0, 0, tileWidth, tileHeight
+            );
+
+            splitImages.push(canvas.toDataURL('image/png'));
+          }
+        }
+
+        // 更新 store
+        setSplitsImages(splitImages);
+
+        // 重置排除状态
+        setExcludedImageIds(new Set());
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // 清空 input 以允许重复选择同一文件
+    if (gridImageInputRef.current) {
+      gridImageInputRef.current.value = '';
+    }
+  };
 
   return (
     <ChatMessage stepId="step-split" visible={visible}>
@@ -606,44 +665,57 @@ const StepSplit = ({ visible = true }) => {
                 marginBottom: '8px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                gap: '8px'
               }}>
                 <span>分镜画面 ({reorderedSplitsImages.length} 张) - 可拖拽排序或到左侧</span>
-                {selectedCount > 0 && (
-                  <Button variant="primary" size="small" onClick={handleConfirmSelection}>
-                    ✅ 确认选择 ({selectedCount})
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {selectedCount > 0 && (
+                    <Button variant="primary" size="small" onClick={handleConfirmSelection}>
+                      ✅ 确认选择 ({selectedCount})
+                    </Button>
+                  )}
+                  <input
+                    ref={gridImageInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLocalGridImport}
+                    style={{ display: 'none' }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="small"
+                    onClick={() => gridImageInputRef.current?.click()}
+                  >
+                    📁 本地导入
                   </Button>
-                )}
-              </div>
-              <SortableContext
-                items={reorderedSplitsImages.map((_, index) => `split-image-${index}`)}
-              >
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(5, 1fr)',
-                  gap: '8px',
-                  backgroundColor: 'var(--bg-subtle)',
-                  padding: '12px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border)'
-                }}>
-                  {reorderedSplitsImages.map(({ src, originalIndex }, index) => {
-                    // 获取对应的 shot 信息（使用原始索引）
-                    const shotInfo = storyboard?.shots?.[originalIndex];
-                    return (
-                      <DraggableImage
-                        key={`split-image-${index}`}
-                        imageUrl={src}
-                        index={index}
-                        originalIndex={originalIndex}
-                        shotInfo={shotInfo}
-                        isExcluded={excludedImageIds.has(originalIndex)}
-                        onToggleExclude={handleToggleExclude}
-                      />
-                    );
-                  })}
                 </div>
-              </SortableContext>
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: '8px',
+                backgroundColor: 'var(--bg-subtle)',
+                padding: '12px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)'
+              }}>
+                {reorderedSplitsImages.map(({ src, originalIndex }, index) => {
+                  // 获取对应的 shot 信息（使用原始索引）
+                  const shotInfo = storyboard?.shots?.[originalIndex];
+                  return (
+                    <DraggableImage
+                      key={`split-image-${index}`}
+                      imageUrl={src}
+                      index={index}
+                      originalIndex={originalIndex}
+                      shotInfo={shotInfo}
+                      isExcluded={excludedImageIds.has(originalIndex)}
+                      onToggleExclude={handleToggleExclude}
+                    />
+                  );
+                })}
+              </div>
             </div>
           )}
         </Card.Body>

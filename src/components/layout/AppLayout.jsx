@@ -7,10 +7,11 @@ const AppLayout = ({
   rightSidebar,
   children,  // 中间区域内容
   onDragEnd, // 拖拽结束回调
-  sensors    // 拖拽传感器配置
+  sensors,   // 拖拽传感器配置
+  dropAnimation // 放置动画配置
 }) => {
   return (
-    <DndContext sensors={sensors} onDragEnd={onDragEnd}>
+    <DndContext sensors={sensors} onDragEnd={onDragEnd} dropAnimation={dropAnimation}>
       <div className="app-layout">
       {/* 左侧边栏 */}
       {leftSidebar && (

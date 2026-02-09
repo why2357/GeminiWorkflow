@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   useDroppable
 } from '@dnd-kit/core';
@@ -21,11 +21,17 @@ const SortableItem = ({ item, index, onRemove }) => {
     transform,
     transition,
     isDragging
-  } = useSortable({ id: item.instanceId });
+  } = useSortable({
+    id: item.instanceId,
+    transition: {
+      duration: 200, // 200ms 过渡动画
+      easing: 'cubic-bezier(0.25, 1, 0.5, 1)' // 平滑的缓动函数
+    }
+  });
 
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
+    transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
     opacity: isDragging ? 0.5 : 1,
   };
 
@@ -53,7 +59,6 @@ const SelectedListPanel = () => {
   const {
     globalSelectedList,
     clearSelectedList,
-    reorderSelectedList,
     removeFromSelectedList,
     fullScript,
     splitScenes,

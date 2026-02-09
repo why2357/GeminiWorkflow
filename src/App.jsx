@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { useEffect } from 'react';
+import { PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimation } from '@dnd-kit/core';
 import AppHeader from './components/layout/AppHeader';
 import AppLayout from './components/layout/AppLayout';
 import SelectedListPanel from './components/left-sidebar/SelectedListPanel';
@@ -32,6 +31,13 @@ function App() {
     })
   );
 
+  // 自定义放置动画 - 禁用默认动画以避免闪烁
+  const dropAnimation = {
+    ...defaultDropAnimation,
+    duration: 0, // 禁用动画以避免闪烁
+    dragSourceOpacity: 0 // 拖拽时原始元素完全透明
+  };
+
   // 全局拖拽处理函数
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -57,7 +63,7 @@ function App() {
           });
         }
       } else if (over.id.toString().startsWith('split-image-')) {
-        // 网格内重排序
+        // 网格内重排序 - 直接交换两个元素
         const oldIndex = reorderedSplitsImages.findIndex((_, index) => {
           return `split-image-${index}` === active.id.toString();
         });
@@ -66,17 +72,21 @@ function App() {
         });
 
         if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-          const newList = arrayMove(reorderedSplitsImages, oldIndex, newIndex);
+          // 创建新数组并直接交换两个位置的元素
+          const newList = [...reorderedSplitsImages];
+          [newList[oldIndex], newList[newIndex]] = [newList[newIndex], newList[oldIndex]];
           setReorderedSplitsImages(newList);
         }
       }
     } else if (active.id !== over.id) {
-      // 内部排序
+      // 内部排序 - 直接交换两个元素
       const oldIndex = globalSelectedList.findIndex((item) => item.instanceId === active.id);
       const newIndex = globalSelectedList.findIndex((item) => item.instanceId === over.id);
 
       if (oldIndex >= 0 && newIndex >= 0) {
-        const newList = arrayMove(globalSelectedList, oldIndex, newIndex);
+        // 创建新数组并直接交换两个位置的元素
+        const newList = [...globalSelectedList];
+        [newList[oldIndex], newList[newIndex]] = [newList[newIndex], newList[oldIndex]];
         reorderSelectedList(newList);
       }
     }
@@ -87,8 +97,8 @@ function App() {
     const clientId = getOrCreateClientId();
 
     // 1. 初始化图片缓存
-    initImageCache().catch(err => {
-      // console.error('图片缓存初始化失败:', err);
+    initImageCache().catch(() => {
+      // console.error('图片缓存初始化失败');
     });
 
     // 2. 启动智能缓存更新（每 30 秒检查一次）
@@ -117,9 +127,44 @@ function App() {
         rightSidebar={<HistoryPanel />}
         onDragEnd={handleDragEnd}
         sensors={sensors}
+        dropAnimation={dropAnimation}
       >
         <WorkflowStream />
       </AppLayout>
+      <DragOverlay>
+        {({ active }) => {
+          const dragData = active.data.current;
+          if (dragData && dragData.src) {
+            // 根据拖拽源类型决定预览尺寸
+            const isFromGrid = active.id.toString().startsWith('split-image-');
+
+            return (
+              <div style={{
+                width: isFromGrid ? '160px' : '280px',
+                height: isFromGrid ? '90px' : '70px',
+                opacity: 0.9,
+                transform: isFromGrid ? 'rotate(3deg)' : 'rotate(-2deg)',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                pointerEvents: 'none'
+              }}>
+                <img
+                  src={dragData.src}
+                  alt="拖拽预览"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
+                />
+              </div>
+            );
+          }
+          return null;
+        }}
+      </DragOverlay>
     </>
   );
 }

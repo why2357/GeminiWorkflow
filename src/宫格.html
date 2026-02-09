@@ -126,28 +126,24 @@
 
         .sidebar-content {
             flex: 1;
-            overflow-y: scroll;
-            /* Force scrollbar to prevent layout shift */
-            /* scrollbar-gutter: stable; */
+            overflow-y: scroll; /* Force scrollbar to prevent layout shift */
+            /* scrollbar-gutter: stable; */ 
             padding: 0;
             background: #f1f5f9;
-            display: block;
+            display: block; 
         }
 
         /* Custom Scrollbar for Sidebar to look cleaner */
         .sidebar-content::-webkit-scrollbar {
             width: 6px;
         }
-
         .sidebar-content::-webkit-scrollbar-track {
             background: transparent;
         }
-
         .sidebar-content::-webkit-scrollbar-thumb {
             background-color: #cbd5e1;
             border-radius: 3px;
         }
-
         .sidebar-content::-webkit-scrollbar-thumb:hover {
             background-color: #94a3b8;
         }
@@ -170,22 +166,22 @@
         }
 
         /* Cards */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .card.flex-grow {
-            flex-grow: 1;
-            min-height: 400px;
-        }
-
+        .card { 
+            background: var(--bg-card); 
+            border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-sm); 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+        } 
+ 
+        .card.flex-grow { 
+            flex-grow: 1; 
+            min-height: 400px; 
+        } 
+ 
         .card-header {
             padding: 16px 24px;
             border-bottom: 1px solid var(--border);
@@ -297,7 +293,6 @@
             color: var(--text-sub);
             padding: 4px;
         }
-
         button.danger-ghost:hover {
             color: var(--danger);
             background: #fee2e2;
@@ -336,8 +331,7 @@
 
         /* Interactive Grid */
         .grid-container {
-            display: none;
-            /* Initially hidden */
+            display: none; /* Initially hidden */
             flex-direction: column;
             height: 100%;
         }
@@ -408,11 +402,9 @@
             overflow: hidden;
             /* Remove border and shadow */
             border: none;
-            border-bottom: 1px solid white;
-            /* Add thin white line separator */
+            border-bottom: 1px solid white; /* Add thin white line separator */
             box-shadow: none;
-            display: block;
-            /* Changed to block */
+            display: block; /* Changed to block */
             cursor: grab;
             margin-bottom: 0;
             transition: all 0.2s;
@@ -440,14 +432,14 @@
             opacity: 0;
             transition: all 0.2s;
             z-index: 50;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
+        
         .delete-btn:hover {
             background: #fff;
             transform: scale(1.1);
             color: #dc2626;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
 
         .selected-item-frame {
@@ -458,24 +450,21 @@
             height: auto;
             min-height: 0;
             display: block;
-            line-height: 0;
-            /* Remove potential text line-height gaps */
+            line-height: 0; /* Remove potential text line-height gaps */
         }
 
         .selected-item-frame img {
             width: 100%;
             height: auto;
             display: block;
-            vertical-align: top;
-            /* Changed from bottom to top to be safe */
+            vertical-align: top; /* Changed from bottom to top to be safe */
             border: none;
             margin: 0;
             padding: 0;
         }
 
         .selected-item-info {
-            display: none;
-            /* Hide the info bar as per screenshot */
+            display: none; /* Hide the info bar as per screenshot */
         }
 
         .selected-item:last-child {
@@ -489,7 +478,7 @@
             border: 2px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
         }
@@ -525,7 +514,7 @@
             font-size: 0.75rem;
         }
 
-        .sortable-ghost {
+        .sortable-ghost { 
             opacity: 1 !important;
             background: #f1f5f9 !important;
             border: 2px dashed var(--primary) !important;
@@ -533,32 +522,29 @@
             transform: none !important;
             filter: none !important;
         }
-
-        .sortable-ghost img,
+        
+        .sortable-ghost img, 
         .sortable-ghost .tile-badge {
             opacity: 0.5 !important;
             visibility: visible !important;
             filter: grayscale(100%) !important;
         }
 
-        .sortable-drag {
-            cursor: grabbing;
-            opacity: 1 !important;
-            /* transform: scale(1.05); */
-            z-index: 9999;
+        .sortable-drag { 
+            cursor: grabbing; 
+            opacity: 1 !important; 
+            /* transform: scale(1.05);  Removed to avoid conflict with SortableJS positioning */
+            z-index: 9999; 
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
             border-radius: var(--radius-md);
             border: 1px solid var(--primary);
-            pointer-events: none !important;
-            /* Critical for drag detection */
-            transition: none !important;
-            /* Critical: prevent lag during drag */
+            pointer-events: none !important; /* Critical for drag detection */
+            transition: none !important; /* Critical: prevent lag during drag */
         }
-
+        
         /* Drop Zone Highlight */
         .highlight-drop-zone {
-            background-color: #f0fdfa !important;
-            /* Light teal/blue background */
+            background-color: #f0fdfa !important; /* Light teal/blue background */
             box-shadow: inset 0 0 0 2px var(--primary);
             transition: all 0.3s ease;
         }
@@ -577,17 +563,10 @@
             opacity: 0;
             animation: fadeIn 0.5s forwards;
         }
-
+        
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .chat-avatar {
@@ -629,11 +608,11 @@
             display: flex;
             flex-direction: column;
         }
-
+        
         .chat-bubble.user-bubble {
-            border-radius: 16px 0 16px 16px;
-            background: #eff6ff;
-            border-color: #bfdbfe;
+             border-radius: 16px 0 16px 16px;
+             background: #eff6ff;
+             border-color: #bfdbfe;
         }
 
         /* Script Item Styles */
@@ -646,7 +625,7 @@
             gap: 16px;
             transition: all 0.2s;
         }
-
+        
         .script-item:hover {
             border-color: var(--primary);
             box-shadow: var(--shadow-sm);
@@ -695,7 +674,7 @@
             display: none !important;
         }
 
-        /* Modal Styles */
+/* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -759,6 +738,7 @@
 
         /* Improved Ref Upload Styles */
         .ref-drop-zone {
+            margin-top: 16px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             padding: 20px;
@@ -773,8 +753,7 @@
             position: relative;
         }
 
-        .ref-drop-zone:hover,
-        .ref-drop-zone.drag-over {
+        .ref-drop-zone:hover, .ref-drop-zone.drag-over {
             border-color: var(--primary);
             background: #f0f9ff;
         }
@@ -794,7 +773,7 @@
             display: none;
         }
 
-        /* Icon removed */
+        /* Icon removed as requested */
 
         .ref-image-item {
             width: 80px;
@@ -821,7 +800,7 @@
             right: 2px;
             width: 20px;
             height: 20px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0,0,0,0.6);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -837,7 +816,7 @@
         .ref-image-item:hover .ref-image-delete {
             opacity: 1;
         }
-
+        
         .ref-add-more {
             width: 80px;
             height: 80px;
@@ -853,15 +832,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
@@ -874,34 +846,31 @@
             Gemini Workflow
             <span class="badge">v2.1 Layout</span>
         </h1>
-        <!-- Print Button removed -->
+        <!-- Removed Print Button -->
     </header>
 
     <div class="app-layout">
-
+        
         <!-- LEFT COLUMN: Selected Slices -->
         <aside class="sidebar">
-            <div class="sidebar-header" style="gap: 8px;">
+            <div class="sidebar-header">
                 <span>🎬 已选分镜</span>
-                <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-                    <span class="badge" id="leftCountBadge">0</span>
-                    <button class="secondary" onclick="clearSelectedList()" style="padding: 4px 8px; font-size: 0.8rem;"
-                        title="清空已选">🗑️</button>
-                </div>
+                <span class="badge" id="leftCountBadge">0</span>
             </div>
             <div class="sidebar-content" id="selectedList">
                 <div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.85rem;">
                     从中间点击图片<br>添加到此处<br><br>可拖拽排序
                 </div>
             </div>
-            <div class="sidebar-footer">
-                <button class="primary" style="width: 100%;" onclick="exportSelectedList()">📦 导出已选</button>
+            <div class="sidebar-footer" style="display: flex; gap: 8px;">
+                <button class="secondary" style="flex: 1; padding: 0;" onclick="openCollageModal()">🧩 宫格拼合</button>
+                <button class="primary" style="flex: 1; padding: 0;" onclick="exportSelectedList()">📦 导出已选</button>
             </div>
         </aside>
 
         <!-- CENTER COLUMN: Main Work Area -->
         <main class="center-column">
-
+            
             <div class="chat-stream">
 
                 <!-- Step 1: Script Splitting -->
@@ -911,24 +880,20 @@
                         <div class="chat-name">AI Agent</div>
                         <div class="chat-bubble" id="card-split">
                             <div class="card-header" style="justify-content: space-between;">
-                                <span class="card-title">分镜脚本 (AI Analysis)</span>
-                                <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;"
-                                    onclick="openPromptModal('split')">⚙️ 预设提示词</button>
+                                <span class="card-title">剧本拆分 (AI Analysis)</span>
+                                <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="openPromptModal('split')">⚙️ 预设提示词</button>
                             </div>
                             <div class="card-body" style="flex-grow: 0;">
                                 <p style="margin-top:0; margin-bottom:12px; font-size:0.9rem; color:var(--text-sub);">
                                     你好！我是你的分镜助手。请先粘贴你的长篇剧本，我会帮你拆分成关键场景。
                                 </p>
-                                <textarea id="fullScriptInput" placeholder="在此粘贴长篇剧本（约5000字）..."
-                                    style="min-height: 150px; overflow-y: hidden; resize: none;"
-                                    oninput="autoResize(this, 80)"></textarea>
+                                <textarea id="fullScriptInput" placeholder="在此粘贴长篇剧本（约5000字）..." style="min-height: 150px; overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
                                 <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
                                     <button class="primary" onclick="splitScript()">🤖 AI 智能拆分</button>
                                 </div>
-
+                                
                                 <!-- Split Results Area -->
-                                <div id="splitResults"
-                                    style="margin-top: 16px; display: none; gap: 12px; flex-direction: column;">
+                                <div id="splitResults" style="margin-top: 16px; display: none; gap: 12px; flex-direction: column;">
                                     <!-- Results will be injected here -->
                                 </div>
                             </div>
@@ -944,25 +909,21 @@
                         <div class="chat-bubble" id="card-input">
                             <div class="card-header" style="justify-content: space-between;">
                                 <span class="card-title">片段选取 (Segment Selection)</span>
-                                <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;"
-                                    onclick="openPromptModal('shot')">⚙️ 预设提示词</button>
+                                <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="openPromptModal('shot')">⚙️ 预设提示词</button>
                             </div>
                             <div class="card-body" style="flex-grow: 0;">
                                 <p style="margin-top:0; margin-bottom:12px; font-size:0.9rem; color:var(--text-sub);">
                                     已提取该片段。你可以修改片段描述，然后点击生成脚本。
                                 </p>
-                                <textarea id="scriptInput" placeholder="输入您的片段描述... 或从上方拆分结果中选择"
-                                    style="overflow-y: hidden; min-height: 100px; resize: none;"
-                                    oninput="autoResize(this, 100)"></textarea>
-
+                                <textarea id="scriptInput" placeholder="输入您的片段描述... 或从上方拆分结果中选择" style="overflow-y: hidden; min-height: 100px; resize: none;" oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
+                                
                                 <!-- Reference Images Upload -->
                                 <div id="sceneRefDropZone" class="ref-drop-zone">
                                     <div class="ref-placeholder" id="sceneRefPlaceholder">
                                         <span style="font-size: 0.85rem;">请上传场景参考图 (点击或拖拽上传)</span>
                                     </div>
                                     <div id="sceneRefImages" style="display: contents;"></div>
-                                    <input type="file" multiple accept="image/*" id="sceneRefUpload"
-                                        style="display: none;" onchange="handleRefUpload(this, 'sceneRefImages')">
+                                    <input type="file" multiple accept="image/*" id="sceneRefUpload" style="display: none;" onchange="handleRefUpload(this, 'sceneRefImages')">
                                 </div>
 
                                 <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 10px;">
@@ -986,23 +947,20 @@
                                 <p style="margin-top:0; margin-bottom:12px; font-size:0.9rem; color:var(--text-sub);">
                                     分镜脚本已生成。请检查并进行二次修改，确认无误后生成画面。
                                 </p>
-
+                                
                                 <!-- Script List Container -->
-                                <div id="scriptListContainer"
-                                    style="display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; padding-right: 4px;">
+                                <div id="scriptListContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; padding-right: 4px;">
                                     <!-- Items will be injected here -->
-                                    <div style="text-align: center; color: var(--text-sub); padding: 20px;">等待生成...
-                                    </div>
+                                    <div style="text-align: center; color: var(--text-sub); padding: 20px;">等待生成...</div>
                                 </div>
-
+                                
                                 <!-- Reference Images Upload (Script Step) -->
                                 <div id="scriptRefDropZone" class="ref-drop-zone">
                                     <div class="ref-placeholder" id="scriptRefPlaceholder">
                                         <span style="font-size: 0.85rem;">上传角色和场景参考图 (点击或拖拽上传)</span>
                                     </div>
                                     <div id="scriptRefImages" style="display: contents;"></div>
-                                    <input type="file" multiple accept="image/*" id="scriptRefUpload"
-                                        style="display: none;" onchange="handleRefUpload(this, 'scriptRefImages')">
+                                    <input type="file" multiple accept="image/*" id="scriptRefUpload" style="display: none;" onchange="handleRefUpload(this, 'scriptRefImages')">
                                 </div>
 
                                 <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 10px;">
@@ -1025,16 +983,14 @@
                                 </div>
                                 <div id="workspaceActions" style="display:none; gap: 8px;">
                                     <button class="primary" onclick="confirmSelection()">✅ 确认选择</button>
-                                    <button class="secondary" onclick="document.getElementById('imageUpload').click()"
-                                        style="padding: 6px 12px; font-size: 0.8rem;">➕ 本地导入</button>
+                                    <button class="secondary" onclick="document.getElementById('imageUpload').click()" style="padding: 6px 12px; font-size: 0.8rem;">➕ 本地导入</button>
                                 </div>
                             </div>
                             <div class="card-body" style="padding: 0; position: relative;">
-
+                                
                                 <!-- View 1: Upload -->
                                 <div class="upload-zone" id="uploadArea">
-                                    <input type="file" id="imageUpload" accept="image/*"
-                                        onchange="handleImageUpload(this)">
+                                    <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(this)">
                                     <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
                                     <div style="font-weight: 600; margin-bottom: 4px;">点击上传图片</div>
                                     <div style="color: var(--text-sub); font-size: 0.85rem;">或拖拽文件到此处</div>
@@ -1072,10 +1028,8 @@
 
         <!-- RIGHT COLUMN: History -->
         <aside class="sidebar right">
-            <div class="sidebar-header" style="justify-content: space-between;">
+            <div class="sidebar-header">
                 <span>🕘 历史记录</span>
-                <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="createEmptySession()"
-                    title="新建记录">＋</button>
             </div>
             <div class="sidebar-content" id="sessionList">
                 <div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.85rem;">
@@ -1086,7 +1040,7 @@
 
     </div>
 
-    <!-- Modal for Prompt Config -->
+<!-- Modal for Prompt Config -->
     <div class="modal-overlay" id="promptModal">
         <div class="modal">
             <div class="modal-header">
@@ -1097,8 +1051,7 @@
                 <p style="margin-top: 0; color: var(--text-sub); font-size: 0.9rem; margin-bottom: 12px;">
                     修改发送给 AI 的系统提示词（System Prompt）。这将影响生成结果的风格和格式。
                 </p>
-                <textarea id="promptConfigInput" style="height: 200px; font-family: monospace; font-size: 0.85rem;"
-                    placeholder="输入系统提示词..."></textarea>
+                <textarea id="promptConfigInput" style="height: 200px; font-family: monospace; font-size: 0.85rem;" placeholder="输入系统提示词..."></textarea>
             </div>
             <div class="modal-footer">
                 <button class="secondary" onclick="closeModal()">取消</button>
@@ -1107,11 +1060,122 @@
         </div>
     </div>
 
+    <!-- Modal for Collage -->
+    <div class="modal-overlay" id="collageModal">
+        <div class="modal" style="max-width: 1400px; width: 95%; height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <span>🧩 宫格拼合导出</span>
+                <button class="danger-ghost" onclick="closeCollageModal()">×</button>
+            </div>
+            <div class="modal-body" style="display: flex; gap: 20px; flex: 1; overflow: hidden; padding: 20px;">
+                <!-- Left: Source Images -->
+                <div style="width: 220px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--border); padding-right: 20px;">
+                    <div style="font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+                        可选素材
+                        <span style="font-size: 0.75rem; color: var(--text-sub); font-weight: normal;">拖拽至右侧</span>
+                    </div>
+                    <div id="collageSourceList" style="flex: 1; overflow-y: auto; display: block; padding: 0;">
+                        <!-- Items injected by JS -->
+                    </div>
+                </div>
+                
+                <!-- Right: Canvas Area -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <span style="font-size: 0.9rem; font-weight: 600;">布局设置:</span>
+                            <select id="collageGridSelect" onchange="updateCollageGrid()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); outline: none;">
+                                <option value="2x2">2 x 2 (四宫格)</option>
+                                <option value="2x3">2 x 3 (六宫格)</option>
+                                <option value="3x3" selected>3 x 3 (九宫格)</option>
+                                <option value="4x4">4 x 4 (十六宫格)</option>
+                                <option value="5x5">5 x 5 (二十五宫格)</option>
+                            </select>
+                        </div>
+                        <button class="primary" onclick="exportCollageImage()">🖼️ 导出完整图片</button>
+                    </div>
+                    
+                    <div style="flex: 1; background: #e2e8f0; border-radius: 8px; padding: 20px; overflow: auto; display: flex; justify-content: center; align-items: center; position: relative;">
+                        <div id="collageContainer" class="collage-container">
+                            <!-- Grid Cells -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .collage-container {
+            display: grid;
+            gap: 0;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 100%; /* Fill height to maximize size */
+            max-width: none; /* Remove width restriction */
+            aspect-ratio: auto; /* Allow flexible aspect ratio based on grid content */
+        }
+        
+        .collage-cell {
+            aspect-ratio: 16/9;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .collage-cell:hover {
+            border-color: var(--primary);
+            background: #f1f5f9;
+        }
+        
+        .source-item {
+            position: relative;
+            background: white;
+            border-radius: 0;
+            overflow: hidden;
+            border: none;
+            border-bottom: 1px solid white;
+            box-shadow: none;
+            display: block;
+            cursor: grab;
+            margin-bottom: 0;
+            transition: all 0.2s;
+        }
+        
+        .source-item:hover {
+            opacity: 0.9;
+        }
+        
+        .source-item img {
+            width: 100%;
+            display: block;
+            border-radius: 0;
+        }
+        
+        /* Scrollbar styling for modal lists */
+        #collageSourceList::-webkit-scrollbar {
+            width: 6px;
+        }
+        #collageSourceList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #collageSourceList::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+
     <script>
         function initRefDragAndDrop(dropZoneId, fileInputId) {
             const dropZone = document.getElementById(dropZoneId);
             const fileInput = document.getElementById(fileInputId);
-
+            
             if (!dropZone || !fileInput) return;
 
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -1146,411 +1210,42 @@
             function handleDrop(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-
+                
                 // Manually trigger the handler since we can't easily set files to input (security restriction in some browsers, 
                 // but we can pass the file list directly to our handler)
                 // However, we can create a mock object that looks like an input element
                 if (files && files.length > 0) {
-                    handleRefUpload({ files: files, value: '' }, dropZone.querySelector('div[id$="RefImages"]').id);
+                     handleRefUpload({ files: files, value: '' }, dropZone.querySelector('div[id$="RefImages"]').id);
                 }
             }
-
+            
             // Allow clicking anywhere in the box to trigger upload (except on existing images)
-            dropZone.addEventListener('click', function (e) {
-                if (e.target === dropZone || e.target.closest('.upload-trigger')) {
+            dropZone.addEventListener('click', function(e) {
+                if(e.target === dropZone || e.target.closest('.upload-trigger')) {
                     fileInput.click();
                 }
             });
         }
 
-        let saveTimer = null;
-        let isRestoring = false;
-        let splitScriptText = '';
-        let splitScenes = [];
-        let currentSceneText = '';
-
-        function serializeState() {
-            return {
-                sessions: sessions.filter(s => (s.sourceImage || s.thumb)).map(s => {
-                    const mergedMeta = { ...(s.meta || {}) };
-                    if (s.id === activeSessionId) {
-                        mergedMeta.splitScriptText = splitScriptText;
-                        mergedMeta.splitScenes = splitScenes;
-                        mergedMeta.currentSceneText = currentSceneText;
-                    }
-                    return {
-                        id: s.id,
-                        name: s.name,
-                        thumb: s.thumb,
-                        timestamp: s.timestamp instanceof Date ? s.timestamp.toISOString() : s.timestamp,
-                        sourceImage: s.sourceImage || s.thumb,
-                        tileOrder: s.tiles.map(t => t.id),
-                        selectedIds: s.tiles.filter(t => t.selected).map(t => t.id),
-                        meta: mergedMeta
-                    };
-                }),
-                globalSelectedList: globalSelectedList.map(i => ({
-                    instanceId: i.instanceId,
-                    sessionId: i.sessionId,
-                    tileId: i.tileId,
-                    src: i.src,
-                    badge: i.badge
-                })),
-                activeSessionId: activeSessionId
-            };
-        }
-
-        function getClientId() {
-            let id = localStorage.getItem('clientId');
-            if (!id) {
-                if (window.crypto && crypto.randomUUID) {
-                    id = crypto.randomUUID();
-                } else {
-                    id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-                }
-                localStorage.setItem('clientId', id);
-            }
-            return id;
-        }
-
-        async function saveState() {
-            try {
-                const clientId = getClientId();
-                await fetch(`/api/state?client_id=${encodeURIComponent(clientId)}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(serializeState()),
-                    cache: 'no-store'
-                });
-            } catch (e) {
-                console.warn('Failed to save state', e);
-            }
-        }
-
-        function scheduleSave() {
-            if (isRestoring) return;
-            if (saveTimer) clearTimeout(saveTimer);
-            saveTimer = setTimeout(saveState, 400);
-        }
-
-        async function buildSessionFromData(data) {
-            if (!data || (!data.sourceImage && !data.thumb)) {
-                return null;
-            }
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = function () {
-                    const tilesData = performSlicing(img);
-                    const byId = new Map(tilesData.map(t => [t.id, t]));
-
-                    let ordered = tilesData;
-                    if (Array.isArray(data.tileOrder) && data.tileOrder.length) {
-                        ordered = data.tileOrder.map(id => byId.get(id)).filter(Boolean);
-                    }
-
-                    const selectedSet = new Set(Array.isArray(data.selectedIds) ? data.selectedIds : []);
-                    if (selectedSet.size > 0) {
-                        ordered.forEach(t => { t.selected = selectedSet.has(t.id); });
-                    }
-
-                    resolve({
-                        id: data.id || Date.now(),
-                        name: data.name || `切片组 ${sessions.length + 1}`,
-                        thumb: data.thumb || data.sourceImage,
-                        timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
-                        tiles: ordered,
-                        sourceImage: data.sourceImage || data.thumb,
-                        meta: data.meta || {}
-                    });
-                };
-                img.src = data.sourceImage || data.thumb;
-            });
-        }
-
-        function hydrateSelectedList(savedList) {
-            const rebuilt = [];
-            (savedList || []).forEach(item => {
-                const session = sessions.find(s => s.id === item.sessionId);
-                const tile = session ? session.tiles.find(t => t.id === item.tileId) : null;
-                if (tile) {
-                    rebuilt.push({
-                        instanceId: item.instanceId || generateInstanceId(),
-                        sessionId: item.sessionId,
-                        tileId: item.tileId,
-                        src: tile.src,
-                        badge: tile.badge
-                    });
-                } else if (item.src) {
-                    rebuilt.push({
-                        instanceId: item.instanceId || generateInstanceId(),
-                        sessionId: item.sessionId,
-                        tileId: item.tileId,
-                        src: item.src,
-                        badge: item.badge || ''
-                    });
-                }
-            });
-            return rebuilt;
-        }
-
-        function renderSplitResults(scenes) {
-            const resultArea = document.getElementById('splitResults');
-            if (!resultArea) return;
-            resultArea.style.display = 'flex';
-            resultArea.innerHTML = '';
-
-            scenes.forEach((scene) => {
-                const title = scene?.title || '未命名片段';
-                const content = scene?.content || '';
-                if (!content) return;
-
-                const div = document.createElement('div');
-                div.style.cssText = "padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;";
-                div.onmouseover = () => { div.style.background = '#f1f5f9'; div.style.borderColor = '#cbd5e1'; };
-                div.onmouseout = () => { div.style.background = '#f8fafc'; div.style.borderColor = '#e2e8f0'; };
-                div.onclick = () => selectScene(content);
-
-                div.innerHTML = `
-                    <div style="font-weight: 600; color: #475569; margin-bottom: 4px;">${title}</div>
-                    <div style="font-size: 0.85rem; color: #64748b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${content}</div>
-                `;
-                resultArea.appendChild(div);
-            });
-
-            if (resultArea.children.length === 0) {
-                resultArea.innerHTML = '<div style="color:#ef4444; font-size:0.9rem;">没有返回可用的片段，请调整剧本内容或提示词。</div>';
-            }
-        }
-
-        async function restoreState() {
-            try {
-                const clientId = getClientId();
-                const resp = await fetch(`/api/state?client_id=${encodeURIComponent(clientId)}`, { cache: 'no-store' });
-                if (!resp.ok) return;
-                const data = await resp.json();
-                if (!data || !Array.isArray(data.sessions)) return;
-
-                isRestoring = true;
-                splitScriptText = '';
-                splitScenes = [];
-                currentSceneText = '';
-                sessions = [];
-                globalSelectedList = [];
-                activeSessionId = data.activeSessionId || null;
-
-                for (const s of data.sessions) {
-                    const session = await buildSessionFromData(s);
-                    if (session) sessions.push(session);
-                }
-
-                if (sessions.length > 0) {
-                    renderSessionList();
-                    const active = sessions.find(s => s.id === activeSessionId) || sessions[0];
-                    if (active) {
-                        activeSessionId = active.id;
-                    }
-                }
-
-                globalSelectedList = hydrateSelectedList(data.globalSelectedList);
-                renderSelectedList();
-                const activeForSummary = sessions.find(s => s.id === activeSessionId);
-                const activeMeta = activeForSummary?.meta || null;
-                if (activeMeta && (activeMeta.splitScriptText || activeMeta.splitScenes || activeMeta.currentSceneText)) {
-                    splitScriptText = activeMeta.splitScriptText || '';
-                    splitScenes = Array.isArray(activeMeta.splitScenes) ? activeMeta.splitScenes : [];
-                    currentSceneText = activeMeta.currentSceneText || '';
-
-                    const fullScriptInput = document.getElementById('fullScriptInput');
-                    if (fullScriptInput) {
-                        fullScriptInput.value = splitScriptText;
-                        autoResize(fullScriptInput, 80);
-                    }
-                    if (splitScenes.length > 0) {
-                        renderSplitResults(splitScenes);
-                    }
-                    if (currentSceneText) {
-                        const stepInput = document.getElementById('step-input');
-                        if (stepInput) stepInput.classList.remove('step-hidden');
-                        const scriptInput = document.getElementById('scriptInput');
-                        if (scriptInput) {
-                            scriptInput.value = currentSceneText;
-                            autoResize(scriptInput, 100);
-                        }
-                    }
-                }
-                if (activeForSummary) updateSummary(activeForSummary);
-                resetToInitialView({ clearState: false, saveState: false });
-            } catch (e) {
-                console.warn('Failed to restore state', e);
-            } finally {
-                isRestoring = false;
-            }
-        }
-
         // Initialize drag and drop when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            initRefDragAndDrop('sceneRefDropZone', 'sceneRefUpload');
-            initRefDragAndDrop('scriptRefDropZone', 'scriptRefUpload');
-            restoreState();
+             initRefDragAndDrop('sceneRefDropZone', 'sceneRefUpload');
+             initRefDragAndDrop('scriptRefDropZone', 'scriptRefUpload');
         });
 
         // ================= PROMPT CONFIG SYSTEM =================
         const promptConfig = {
-            split: `# Role
-你是一位专业的影视剧本统筹（Script Supervisor），擅长分析剧本结构，并根据工作流需求对剧本进行科学、合理的段落拆解。
-
-# Task
-请阅读用户提供的剧本内容，严格按照下述[拆解规则]对剧本进行分段处理。
-
-# Constraints (拆解规则)
-1.  **场景优先原则**：
-    * 检测到场景切换（如：大场景变更、时间地点变更、明显的“内/外景”标识）时，必须强制分段。
-
-2.  **长度限制原则**：
-    * 以“镜头”或“动作/对话块”为计数单位。
-    * 如果单一场景内的内容超过 **15个镜头/交互块**，必须在保持语义连贯的前提下进行二次拆分（例如分为 Part 1, Part 2）。
-
-3.  **均衡性原则**：
-    * 在满足上述规则的前提下，尽量避免出现某一段字数极少（如仅一两行）或极多（大段文字堆砌）的情况。
-    * 如果一个场景极短（如只有1个镜头），且紧接着的下一个场景也较短，在不影响逻辑理解的情况下，可以将过渡性短场景单独列为一段，但不要强行合并到不相关的场景中。
-
-4.  **内容零篡改原则 (至关重要)**：
-    * **严禁**修改、润色、增加或删除剧本中的任何文字、标点或格式。
-    * 你的工作仅仅是“切分”，就像用剪刀剪纸带一样，不要在上面写字。
-
-5.  **即时判断机制**：
-    * 在输出前先进行自我预检。如果上传的内容本身较短（未发生场景切换且少于15个镜头），则不需要强行拆分，**原样输出**即可。
-
-# Output Format
-请按照以下格式输出拆解后的内容（使用分割线区分）：
-
-=== 第 1 段 ===
-[剧本原始内容]
-
-=== 第 2 段 ===
-[剧本原始内容]
-
-...
-
-# Workflow
-1. 接收用户输入的剧本。
-2. 扫描场景关键词（如：日、夜、内、外、场景名）。
-3. 统计每个自然段或镜头号的数量。
-4. 应用拆解规则。
-5. 输出最终结果。
-
-# Input
-[请在此处粘贴你的剧本内容]`,
-            shot: `(NanoBananaPro视角裂变专家
-
-
-
-  :核心角色 "多维视角一致性生成助手 (5x5)"
-
-
-
-  :目的 "基于用户提供的单张参考图描述，保持视觉锚点绝对不变，通过特定视角的强化组合，生成25个（5x5宫格）极具沉浸感的JSON格式中文提示词。"
-
-
-
-  :适配模型 "NanoBananaPro"
-
-
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  ;; 核心能力设定
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  :能力 (
-
-    (视觉锁定 "能够精准提取并锁定参考图中的核心元素（人物ID、衣着细节、环境布局、特定光影），确保在25张分镜中这些描述一字不差或高度一致。")
-
-    (特定镜头强化 "侧重于沉浸式和关系视角的构建，重点生成背后、过肩及主观镜头。")
-
-    (随机排列 "能够生成9种高张力的镜头组合，避免平庸的平视镜头。")
-
-    (格式输出 "严格遵守NanoBananaPro的JSON格式要求，输出5x5布局配置。")
-
-  )
-
-
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  ;; 变量库 (已根据要求调整)
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  :镜头变量库 (
-
-    ;; 剔除了常规的 Long, Medium, Close，保留极端的或更有张力的景别
-
-    (景别 '( "Extreme Close-up (ECU - Focus on eyes/details)" "Full Body Shot" "Cowboy Shot (Thigh-up)" "Upper Body Shot (Chest-up)" "Wide Angle Full Shot" ))
-
-    
-
-    ;; 强调了需要的视角，但保留部分其他视角以供填充剩余空位
-
-    (视角 '( "Back View (Walking away/Looking at scenery)" "Over-the-Shoulder (OTS)" "Point of View (POV)" "Low Angle (Heroic)" "High Angle (Vulnerable)" "Dutch Angle (Tilted)" "Top-Down / God's Eye View" ))
-
-    
-
-    (构图 '( "Rule of Thirds" "Center Composition" "Depth of Field (Bokeh)" "Framing within a frame" "Dynamic Diagonal" ))
-
-  )
-─────────────────────────────────────────────────────────────────
-
-  ;; 约束模块 (硬性规定)
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  :约束 (
-
-    (C1 "一致性绝对优先：无论视角如何变化，人物特征（发型、衣着、面孔）和环境必须保持一致。")
-
-    (C2 "视角强制分布：25个分镜中必须包含：
-
-         - 至少 6个 背后视角 (Back View)；
-
-         - 至少 8个 过肩视角 (Over-the-Shoulder)；
-
-         - 至少 6个 主观视角 (Point of View/POV)；
-
-         - 剩余 5个 自由选择高张力视角（如上帝视角或大特写）。")
-
-    (C3 "景别限制：严禁使用 'Medium Shot', 'Long Shot', 'Close-up' 这种平庸的描述。请使用 'Cowboy Shot', 'Extreme Close-up', 'Full Body' 等替代。")
-
-    (C4 "格式规范：JSON必须纯净，shots数组必须精确包含25个对象。")
-
-    (C5 "文字指令：每个prompt必须包含 \"'分镜X' in the top-left corner\" 和 \"no timecode, no subtitles\"。")
-
-    (C6 "语言：Prompt内容必须为中文。")
-
-  )
-
-
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  ;; 运行指令
-
-  ;;──────────────────────────────────────────────────────────────────────
-
-  (运行方法 "请用户输入参考图的详细描述（中文），助手将自动生成包含25个（5x5）特定强化视角的JSON代码块。")
-
-)`
+            split: "你是一位专业的电影分镜师。请分析以下剧本，将其拆分为关键的场景片段。对于每个片段，请提供一个简短的标题和一段详细的视觉描述。",
+            shot: "基于以下场景描述，生成25个连续的分镜画面描述。每个画面应包含运镜方式、景别、光影细节和具体的动作描述。风格为赛博朋克电影感，8K分辨率。"
         };
-        const promptDefaults = { ...promptConfig };
-
+        
         let currentEditingPromptType = null;
 
         function openPromptModal(type) {
             currentEditingPromptType = type;
             const modal = document.getElementById('promptModal');
             const textarea = document.getElementById('promptConfigInput');
-
+            
             textarea.value = promptConfig[type];
             modal.classList.add('active');
         }
@@ -1562,35 +1257,25 @@
 
         function savePrompt() {
             if (!currentEditingPromptType) return;
-
+            
             const textarea = document.getElementById('promptConfigInput');
             promptConfig[currentEditingPromptType] = textarea.value;
-
+            
             console.log(`Updated ${currentEditingPromptType} prompt:`, promptConfig[currentEditingPromptType]);
             closeModal();
-        }
-
-        function autoResize(textarea, minPx) {
-            if (!textarea) return;
-            if (!textarea.value) {
-                textarea.style.height = `${minPx}px`;
-                return;
-            }
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
         }
 
         /* ================= 逻辑代码 ================= */
 
         // 0. Step 1: Script Splitting Logic
-        async function splitScript() {
+        function splitScript() {
             const input = document.getElementById('fullScriptInput').value;
             const btn = document.querySelector('#card-split button.primary');
             const resultArea = document.getElementById('splitResults');
-
+            
             if (!input || input.length < 5) {
                 // Allow short input for demo purposes, but warn if empty
-                if (!input) {
+                if(!input) {
                     alert("请先输入剧本内容");
                     return;
                 }
@@ -1599,252 +1284,93 @@
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '🤖 分析中...';
-
-            try {
-                const resp = await fetch('/api/split', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        script: input,
-                        system_prompt: promptConfig.split
-                    })
-                });
-
-                if (!resp.ok) {
-                    const detail = await resp.text();
-                    throw new Error(detail || `HTTP ${resp.status}`);
-                }
-
-                const data = await resp.json();
-                const scenes = Array.isArray(data.scenes) ? data.scenes : [];
-
-                splitScriptText = input;
-                splitScenes = scenes;
-                renderSplitResults(scenes);
-                scheduleSave();
-            } catch (err) {
-                console.error(err);
-                alert("拆分失败");
-            } finally {
+            
+            // Mock AI processing delay
+            setTimeout(() => {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-            }
+                resultArea.style.display = 'flex';
+                
+                // Mock scenes based on input or default
+                const baseText = input.length > 20 ? input.substring(0, 20) + "..." : "赛博朋克...";
+                const scenes = [
+                    { title: "片段一：开端", content: input || "赛博朋克雨夜，侦探在霓虹灯下行走，突然回头，发现黑影。他拔出武器，雨水顺着帽檐滴落。" },
+                    { title: "片段二：发展", content: "昏暗的地下酒吧，全息舞女在空中扭动。侦探推开门，所有人的目光都聚集在他身上。" },
+                    { title: "片段三：高潮", content: "飞行车在摩天大楼间穿梭，引擎轰鸣。侦探驾驶着老旧的飞车，死死咬住前方的豪华穿梭机。" }
+                ];
+                
+                resultArea.innerHTML = '';
+                scenes.forEach((scene, index) => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;";
+                    div.onmouseover = () => { div.style.background = '#f1f5f9'; div.style.borderColor = '#cbd5e1'; };
+                    div.onmouseout = () => { div.style.background = '#f8fafc'; div.style.borderColor = '#e2e8f0'; };
+                    div.onclick = () => selectScene(scene.content);
+                    
+                    div.innerHTML = `
+                        <div style="font-weight: 600; color: #475569; margin-bottom: 4px;">${scene.title}</div>
+                        <div style="font-size: 0.85rem; color: #64748b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${scene.content}</div>
+                    `;
+                    resultArea.appendChild(div);
+                });
+            }, 800);
         }
 
         function selectScene(content) {
             const scriptInput = document.getElementById('scriptInput');
             scriptInput.value = content;
-            autoResize(scriptInput, 100);
-            currentSceneText = content;
-            scheduleSave();
-
+            
             // Show Step 2 (Scene Description)
             const stepInput = document.getElementById('step-input');
             stepInput.classList.remove('step-hidden');
             stepInput.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
+            
             // Highlight effect
             scriptInput.style.transition = 'background 0.3s';
             scriptInput.style.background = '#e0e7ff';
             setTimeout(() => scriptInput.style.background = '#f1f5f9', 500);
         }
 
-        function renderScriptReviewFromSession(session) {
-            const meta = session?.meta || {};
-            const shotTexts = Array.isArray(meta.shotTexts) ? meta.shotTexts : [];
-            const sceneText = typeof meta.sceneText === 'string' ? meta.sceneText : '';
-            const savedPromptConfig = meta.promptConfig || null;
-            const savedSplitScriptText = typeof meta.splitScriptText === 'string' ? meta.splitScriptText : '';
-            const savedSplitScenes = Array.isArray(meta.splitScenes) ? meta.splitScenes : [];
-            const savedCurrentSceneText = typeof meta.currentSceneText === 'string' ? meta.currentSceneText : '';
-
-            if (savedPromptConfig) {
-                if (typeof savedPromptConfig.split === 'string') promptConfig.split = savedPromptConfig.split;
-                if (typeof savedPromptConfig.shot === 'string') promptConfig.shot = savedPromptConfig.shot;
-            }
-
-            if (savedSplitScriptText || savedSplitScenes.length || savedCurrentSceneText) {
-                splitScriptText = savedSplitScriptText;
-                splitScenes = savedSplitScenes;
-                currentSceneText = savedCurrentSceneText;
-
-                const fullScriptInput = document.getElementById('fullScriptInput');
-                if (fullScriptInput) {
-                    fullScriptInput.value = splitScriptText;
-                    autoResize(fullScriptInput, 80);
-                }
-                if (splitScenes.length > 0) {
-                    renderSplitResults(splitScenes);
-                }
-            } else {
-                splitScriptText = '';
-                splitScenes = [];
-                currentSceneText = '';
-                const fullScriptInput = document.getElementById('fullScriptInput');
-                if (fullScriptInput) {
-                    fullScriptInput.value = '';
-                    autoResize(fullScriptInput, 80);
-                }
-                const splitResults = document.getElementById('splitResults');
-                if (splitResults) {
-                    splitResults.style.display = 'none';
-                    splitResults.innerHTML = '';
-                }
-                const stepInput = document.getElementById('step-input');
-                if (stepInput) stepInput.classList.add('step-hidden');
-                const stepReview = document.getElementById('step-script-review');
-                if (stepReview) stepReview.classList.add('step-hidden');
-                const scriptInput = document.getElementById('scriptInput');
-                if (scriptInput) {
-                    scriptInput.value = '';
-                    autoResize(scriptInput, 100);
-                }
-                const container = document.getElementById('scriptListContainer');
-                if (container) {
-                    container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 20px;">等待生成...</div>';
-                }
-                const sceneRefContainer = document.getElementById('sceneRefImages');
-                const scriptRefContainer = document.getElementById('scriptRefImages');
-                const sceneRefPlaceholder = document.getElementById('sceneRefPlaceholder');
-                const scriptRefPlaceholder = document.getElementById('scriptRefPlaceholder');
-                if (sceneRefContainer) sceneRefContainer.innerHTML = '';
-                if (scriptRefContainer) scriptRefContainer.innerHTML = '';
-                if (sceneRefPlaceholder) sceneRefPlaceholder.classList.remove('has-items');
-                if (scriptRefPlaceholder) scriptRefPlaceholder.classList.remove('has-items');
-            }
-
-            const scriptInput = document.getElementById('scriptInput');
-            if (scriptInput) {
-                scriptInput.value = sceneText || currentSceneText || '';
-            }
-
-            const stepInput = document.getElementById('step-input');
-            if (stepInput) {
-                if (sceneText || currentSceneText) {
-                    stepInput.classList.remove('step-hidden');
-                } else {
-                    stepInput.classList.add('step-hidden');
-                }
-            }
-            if (scriptInput && (sceneText || currentSceneText)) {
-                requestAnimationFrame(() => autoResize(scriptInput, 100));
-            }
-
-            const stepReview = document.getElementById('step-script-review');
-            if (stepReview) {
-                if (shotTexts.length > 0) {
-                    stepReview.classList.remove('step-hidden');
-                } else {
-                    stepReview.classList.add('step-hidden');
-                }
-            }
-
-            const container = document.getElementById('scriptListContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            if (shotTexts.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; font-size:0.9rem;">暂无分镜内容</div>';
-            } else {
-                shotTexts.forEach((content, idx) => {
-                    if (!content) return;
-                    const item = document.createElement('div');
-                    item.className = 'script-item';
-                    item.innerHTML = `
-                        <div class="shot-badge">Shot ${idx + 1}</div>
-                        <div class="script-content">
-                            <textarea class="script-textarea" oninput="autoResize(this, 60)">${content}</textarea>
-                        </div>
-                    `;
-                    container.appendChild(item);
-
-                    const ta = item.querySelector('textarea');
-                    setTimeout(() => {
-                        autoResize(ta, 60);
-                    }, 0);
-                });
-            }
-            const sceneRefContainer = document.getElementById('sceneRefImages');
-            const scriptRefContainer = document.getElementById('scriptRefImages');
-            const sceneRefPlaceholder = document.getElementById('sceneRefPlaceholder');
-            const scriptRefPlaceholder = document.getElementById('scriptRefPlaceholder');
-            if (sceneRefContainer) sceneRefContainer.innerHTML = '';
-            if (scriptRefContainer) scriptRefContainer.innerHTML = '';
-            if (sceneRefPlaceholder) sceneRefPlaceholder.classList.remove('has-items');
-            if (scriptRefPlaceholder) scriptRefPlaceholder.classList.remove('has-items');
-        }
-
         // 1. Generate Script / Prompts
-        async function generatePrompts() {
+        function generatePrompts() {
             const input = document.getElementById('scriptInput').value || "默认剧本";
             const btn = document.querySelector('#card-input button.primary');
             const originalText = btn.innerText;
-
+            
             btn.innerText = "✨ 生成中...";
             btn.disabled = true;
 
-            try {
-                let refImages = collectRefImages('sceneRefImages');
-                if (refImages.length > 0) {
-                    const compressed = await Promise.all(refImages.map(async (img) => {
-                        const dataUrl = `data:${img.mime_type};base64,${img.data}`;
-                        const approxBytes = Math.floor((img.data.length * 3) / 4);
-                        if (approxBytes <= SHOTS_REF_TARGET_BYTES) return img;
-                        const compressedUrl = await compressImageDataUrl(dataUrl, {
-                            maxEdge: SHOTS_REF_MAX_EDGE,
-                            targetBytes: SHOTS_REF_TARGET_BYTES,
-                            startQuality: SHOTS_REF_START_QUALITY,
-                            minQuality: SHOTS_REF_MIN_QUALITY
-                        });
-                        return dataUrlToRef(compressedUrl) || img;
-                    }));
-                    refImages = compressed.filter(Boolean);
-                }
-                const resp = await fetch('/api/shots', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        scene: input,
-                        system_prompt: promptConfig.shot,
-                        count: 25,
-                        ref_images: refImages
-                    })
-                });
-
-                if (!resp.ok) {
-                    const detail = await resp.text();
-                    throw new Error(detail || `HTTP ${resp.status}`);
-                }
-
-                const data = await resp.json();
-                const shots = Array.isArray(data.shots) ? data.shots : [];
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
 
                 // Show Step 3 (Script Review)
                 const stepReview = document.getElementById('step-script-review');
                 stepReview.classList.remove('step-hidden');
                 stepReview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
+                
                 // Transfer Reference Images
                 const sceneRefContainer = document.getElementById('sceneRefImages');
                 const scriptRefContainer = document.getElementById('scriptRefImages');
                 scriptRefContainer.innerHTML = ''; // Clear previous
-
+                
                 if (sceneRefContainer.children.length > 0) {
                     Array.from(sceneRefContainer.children).forEach(child => {
                         const clone = child.cloneNode(true);
+                        // Re-bind click event isn't strictly needed for inline onclick attribute, 
+                        // but let's ensure it works by relying on the attribute logic
                         scriptRefContainer.appendChild(clone);
                     });
                 }
 
-                // Render Shots
+                // Generate Mock Prompts (25 shots)
                 const container = document.getElementById('scriptListContainer');
                 container.innerHTML = '';
-
-                shots.forEach((shot, idx) => {
-                    const shotNum = shot?.shotNum || (idx + 1);
-                    const content = shot?.content || '';
-                    if (!content) return;
-
+                
+                for(let i = 0; i < 25; i++) {
+                    const shotNum = i + 1;
+                    const content = `Cinematic shot, ${input.substring(0, 10)}..., 8k resolution, detailed texture, volumetric lighting.`;
+                    
                     const item = document.createElement('div');
                     item.className = 'script-item';
                     item.innerHTML = `
@@ -1854,124 +1380,74 @@
                         </div>
                     `;
                     container.appendChild(item);
-
+                    
+                    // Trigger initial resize
                     const ta = item.querySelector('textarea');
                     setTimeout(() => {
-                        autoResize(ta, 60);
+                        ta.style.height = 'auto';
+                        ta.style.height = ta.scrollHeight + 'px';
                     }, 0);
-                });
-
-                if (container.children.length === 0) {
-                    container.innerHTML = '<div style="color:#ef4444; font-size:0.9rem;">没有返回可用的分镜，请调整场景描述或提示词。</div>';
                 }
-            } catch (err) {
-                console.error(err);
-                alert("生成分镜失败");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+                
+            }, 1000);
         }
 
         // 2. Generate Images
-        function collectRefImages(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return [];
-            const imgs = container.querySelectorAll('img');
-            const results = [];
-            imgs.forEach(img => {
-                const src = img.getAttribute('src') || '';
-                if (!src.startsWith('data:')) return;
-                const match = src.match(/^data:([^;]+);base64,(.+)$/);
-                if (!match) return;
-                results.push({ mime_type: match[1], data: match[2] });
-            });
-            return results;
-        }
+        function generateAndLoadImages() {
+             const btn = document.querySelector('#card-script-review button.primary');
+             
+             // Gather script from list
+             const textareas = document.querySelectorAll('#scriptListContainer .script-textarea');
+             const lines = Array.from(textareas).map((ta, i) => `[Shot ${i+1}] ${ta.value}`);
+             const promptVal = lines.join('\n\n');
+             
+             if (!promptVal || lines.length === 0) {
+                 alert("请先确认脚本内容");
+                 return;
+             }
 
-        async function generateAndLoadImages() {
-            const btn = document.querySelector('#card-script-review button.primary');
+             const originalText = btn.innerText;
+             btn.innerText = "🎨 绘画中...";
+             btn.disabled = true;
 
-            // Gather script from list
-            const textareas = document.querySelectorAll('#scriptListContainer .script-textarea');
-            const lines = Array.from(textareas).map((ta, i) => `[Shot ${i + 1}] ${ta.value}`);
-            const promptVal = lines.join('\n\n');
-            const shotTexts = Array.from(textareas).map((ta) => ta.value);
-            const sceneText = document.getElementById('scriptInput')?.value || '';
+             // Simulate generation delay
+             setTimeout(() => {
+                 btn.innerText = originalText;
+                 btn.disabled = false;
+                 
+                 console.log("Generating images using script:", promptVal);
 
-            if (!promptVal || lines.length === 0) {
-                alert("请先确认脚本内容");
-                return;
-            }
-
-            const originalText = btn.innerText;
-            btn.innerText = "🎨 绘画中...";
-            btn.disabled = true;
-
-            try {
-                const refImages = collectRefImages('scriptRefImages');
-                console.log("refImages count:", refImages.length);
-                refImages.forEach((img, i) => {
-                    const approxBytes = Math.floor((img.data.length * 3) / 4);
-                    console.log(`refImages[${i}] mime=${img.mime_type} bytes≈${approxBytes}`);
-                });
-                const resp = await fetch('/api/image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prompt: promptVal,
-                        aspect_ratio: "16:9",
-                        image_size: "1K",
-                        ref_images: refImages
-                    })
-                });
-
-                if (!resp.ok) {
-                    const detail = await resp.text();
-                    throw new Error(detail || `HTTP ${resp.status}`);
-                }
-
-                const data = await resp.json();
-                if (!data?.image) {
-                    throw new Error("未返回图像数据");
-                }
-
-                // Show Step 4 (Workspace)
-                const stepWorkspace = document.getElementById('step-workspace');
-                stepWorkspace.classList.remove('step-hidden');
-                stepWorkspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                loadImageAndCreateSession(data.image, {
-                    source: 'ai',
-                    createdAt: new Date().toISOString(),
-                    prompt: promptVal,
-                    sceneText,
-                    shotTexts,
-                    splitScriptText,
-                    splitScenes,
-                    currentSceneText,
-                    promptConfig: { split: promptConfig.split, shot: promptConfig.shot },
-                    refImageCount: refImages.length
-                });
-            } catch (err) {
-                console.error(err);
-                alert("生成图像失败");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+                 // Show Step 4 (Workspace)
+                 const stepWorkspace = document.getElementById('step-workspace');
+                 stepWorkspace.classList.remove('step-hidden');
+                 stepWorkspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                 
+                 generateDemoGrid();
+             }, 1000);
         }
 
         // ================= SESSION MANAGEMENT SYSTEM =================
-        let sessions = [];
+        let sessions = []; 
         let activeSessionId = null;
         let globalSelectedList = []; // Array of { instanceId, sessionId, tileId, src, badge }
-
+        
         let selectedListSortable = null;
         let gridSortable = null;
 
         function generateInstanceId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function rebuildGlobalSelectedList() {
+            // Since we allow duplicates, rebuilding from session.selectedList is tricky if we don't store the structure.
+            // But session.selectedList was used for syncing. If we decouple, we might not need to rebuild from sessions.
+            // However, if we want to persist state per session, we should store the list of selected items (including duplicates) in the session.
+            
+            // For now, let's assume globalSelectedList is the master truth for the "Selected Slices" sidebar.
+            // When switching sessions, maybe we want to keep the sidebar as is (global workspace)? 
+            // The user said "Global Selected List" in the code comments ("当前全局已选择").
+            // So we just keep globalSelectedList as is.
+            renderSelectedList();
         }
 
         function updateSummary(session) {
@@ -1984,213 +1460,150 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    loadImageAndCreateSession(e.target.result, {
-                        source: 'upload',
-                        createdAt: new Date().toISOString()
-                    });
+                    loadImageAndCreateSession(e.target.result);
                 }
                 reader.readAsDataURL(input.files[0]);
-                input.value = '';
+                input.value = ''; 
             }
         }
 
-        const REF_MAX_EDGE = 3840;
-        const REF_TARGET_BYTES = 500 * 1024;
-        const REF_START_QUALITY = 0.92;
-        const REF_MIN_QUALITY = 0.75;
-        const REF_SKIP_UNDER_BYTES = 5 * 1024 * 1024;
-
-        // Smaller target for text+image (shots) requests
-        const SHOTS_REF_MAX_EDGE = 1536;
-        const SHOTS_REF_TARGET_BYTES = 200 * 1024;
-        const SHOTS_REF_START_QUALITY = 0.85;
-        const SHOTS_REF_MIN_QUALITY = 0.6;
-
-        function estimateBase64Bytes(dataUrl) {
-            const idx = dataUrl.indexOf(',');
-            if (idx === -1) return 0;
-            const b64 = dataUrl.slice(idx + 1);
-            return Math.floor((b64.length * 3) / 4);
-        }
-
-        function fileToDataUrl(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function dataUrlToRef(dataUrl) {
-            const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
-            if (!match) return null;
-            return { mime_type: match[1], data: match[2] };
-        }
-
-        function compressImageDataUrl(dataUrl, { maxEdge, targetBytes, startQuality, minQuality }) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => {
-                    let { width, height } = img;
-                    const longest = Math.max(width, height);
-                    const scale = longest > maxEdge ? maxEdge / longest : 1;
-                    width = Math.round(width * scale);
-                    height = Math.round(height * scale);
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    if (!ctx) {
-                        reject(new Error('Canvas not supported'));
-                        return;
-                    }
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    let quality = startQuality;
-                    let out = canvas.toDataURL('image/jpeg', quality);
-                    while (estimateBase64Bytes(out) > targetBytes && quality > minQuality) {
-                        quality = Math.max(minQuality, quality - 0.07);
-                        out = canvas.toDataURL('image/jpeg', quality);
-                        if (quality === minQuality) break;
-                    }
-                    resolve(out);
-                };
-                img.onerror = reject;
-                img.src = dataUrl;
-            });
-        }
-
-        function appendRefImage(container, dataUrl, placeholderId) {
-            const div = document.createElement('div');
-            div.className = 'ref-image-item';
-            div.innerHTML = `
-                <img src="${dataUrl}">
-                <div class="ref-image-delete" onclick="event.stopPropagation(); removeRefImage(this, '${placeholderId}')">×</div>
-            `;
-
-            const addBtn = container.querySelector('.ref-add-more');
-            if (addBtn) {
-                container.insertBefore(div, addBtn);
-            } else {
-                container.appendChild(div);
-                const newAddBtn = document.createElement('div');
-                newAddBtn.className = 'ref-add-more';
-                newAddBtn.innerHTML = '+';
-                container.appendChild(newAddBtn);
-            }
-        }
-
-        async function handleRefUpload(input, containerId) {
+        function handleRefUpload(input, containerId) {
             if (!input.files || input.files.length === 0) return;
-
+            
             const container = document.getElementById(containerId);
             const placeholderId = containerId.replace('Images', 'Placeholder');
             const placeholder = document.getElementById(placeholderId);
-
-            if (placeholder) placeholder.classList.add('has-items');
-
-            for (const file of Array.from(input.files)) {
-                try {
-                    const raw = await fileToDataUrl(file);
-                    if (file.size < REF_SKIP_UNDER_BYTES) {
-                        appendRefImage(container, raw, placeholderId);
+            
+            if(placeholder) placeholder.classList.add('has-items');
+            
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'ref-image-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}">
+                        <div class="ref-image-delete" onclick="event.stopPropagation(); removeRefImage(this, '${placeholderId}')">×</div>
+                    `;
+                    
+                    // Insert before the "Add More" button if it exists
+                    const addBtn = container.querySelector('.ref-add-more');
+                    if(addBtn) {
+                        container.insertBefore(div, addBtn);
                     } else {
-                        const compressed = await compressImageDataUrl(raw, {
-                            maxEdge: REF_MAX_EDGE,
-                            targetBytes: REF_TARGET_BYTES,
-                            startQuality: REF_START_QUALITY,
-                            minQuality: REF_MIN_QUALITY
-                        });
-                        appendRefImage(container, compressed, placeholderId);
+                        container.appendChild(div);
+                        // Add "Add More" button if not present
+                        const newAddBtn = document.createElement('div');
+                        newAddBtn.className = 'ref-add-more';
+                        newAddBtn.innerHTML = '+';
+                        container.appendChild(newAddBtn);
                     }
-                } catch (e) {
-                    console.error(e);
                 }
-            }
-
-            input.value = '';
+                reader.readAsDataURL(file);
+            });
+            
+            input.value = ''; 
         }
 
         function removeRefImage(btn, placeholderId) {
             const item = btn.parentElement;
             const container = item.parentElement;
             item.remove();
-
+            
             // Check if any images remain
             const hasImages = container.querySelectorAll('.ref-image-item').length > 0;
-
-            if (!hasImages) {
+            
+            if(!hasImages) {
                 const placeholder = document.getElementById(placeholderId);
-                if (placeholder) placeholder.classList.remove('has-items');
-
+                if(placeholder) placeholder.classList.remove('has-items');
+                
                 // Remove add button
                 const addBtn = container.querySelector('.ref-add-more');
-                if (addBtn) addBtn.remove();
+                if(addBtn) addBtn.remove();
             }
         }
 
-        function loadImageAndCreateSession(src, meta = {}) {
+        function generateDemoGrid() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1920;
+            canvas.height = 1080;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width / 5;
+            const h = canvas.height / 5;
+            
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const hue = (x + y) * 25;
+                    ctx.fillStyle = `hsl(${hue}, 70%, 85%)`;
+                    ctx.fillRect(x * w, y * h, w, h);
+                    ctx.fillStyle = `hsl(${hue}, 70%, 40%)`;
+                    ctx.font = 'bold 60px Inter, sans-serif';
+                    ctx.fillText(`${y * 5 + x + 1}`, x * w + w / 2 - 20, y * h + h / 2 + 20);
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(x * w, y * h, w, h);
+                }
+            }
+            loadImageAndCreateSession(canvas.toDataURL());
+        }
+
+        function loadImageAndCreateSession(src) {
             const img = new Image();
             img.onload = function () {
                 const tilesData = performSlicing(img);
-
+                
                 const newSession = {
                     id: Date.now(),
                     name: `切片组 ${sessions.length + 1}`,
                     thumb: src,
                     timestamp: new Date(),
                     tiles: tilesData,
-                    sourceImage: src,
-                    meta: meta
-                    // selectedList: []
+                    // selectedList: [] // Removed as we are using global list
                 };
-
+                
                 // newSession.selectedList = []; // Start empty until confirmed
-
-                sessions.unshift(newSession);
+                
+                sessions.unshift(newSession); 
                 activeSessionId = newSession.id;
-
+                
                 renderSessionList();
                 loadSessionToWorkspace(newSession);
-
+                
                 // Show Grid View
                 document.getElementById('uploadArea').style.display = 'none';
                 document.getElementById('gridContainer').style.display = 'flex';
                 document.getElementById('workspaceActions').style.display = 'flex';
-
+                
                 // Ensure selected list sortable is initialized even if empty
                 renderSelectedList();
-                scheduleSave();
             }
             img.src = src;
         }
-
+        
         function performSlicing(img) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const rows = 5;
             const cols = 5;
-
+            
             const imgW = img.naturalWidth;
             const imgH = img.naturalHeight;
             const cellW = imgW / cols;
             const cellH = imgH / rows;
-
+            
             canvas.width = cellW;
             canvas.height = cellH;
-
+            
             const tiles = [];
-
+            
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     ctx.clearRect(0, 0, cellW, cellH);
                     ctx.drawImage(img, c * cellW, r * cellH, cellW, cellH, 0, 0, cellW, cellH);
-
+                    
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                     const index = r * cols + c;
-
+                    
                     tiles.push({
                         id: index,
                         src: dataUrl,
@@ -2204,20 +1617,20 @@
 
         function renderSessionList() {
             const container = document.getElementById('sessionList');
-            if (sessions.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.85rem;">暂无切片<br>上传图片开始</div>';
-                return;
+            if(sessions.length === 0) {
+                 container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.85rem;">暂无切片<br>上传图片开始</div>';
+                 return;
             }
-
+            
             container.innerHTML = '';
-
+            
             sessions.forEach(session => {
                 const div = document.createElement('div');
                 div.className = `session-item ${session.id === activeSessionId ? 'active' : ''}`;
                 div.onclick = () => switchSession(session.id);
-
-                const selectedCount = 0;
-
+                
+                const selectedCount = 0; // session.selectedList is removed
+                
                 div.innerHTML = `
                     <img class="session-thumb" src="${session.thumb}">
                     <div class="session-info">
@@ -2231,119 +1644,110 @@
                 container.appendChild(div);
             });
         }
-
+        
         function switchSession(id) {
             activeSessionId = id;
             const session = sessions.find(s => s.id === id);
-            if (session) {
-                renderScriptReviewFromSession(session);
+            if(session) {
                 loadSessionToWorkspace(session);
-                renderSessionList();
-                scheduleSave();
-
+                renderSessionList(); 
+                
                 // Ensure grid is showing
-                const stepWorkspace = document.getElementById('step-workspace');
-                if (stepWorkspace) {
-                    stepWorkspace.classList.remove('step-hidden');
-                    stepWorkspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
                 document.getElementById('uploadArea').style.display = 'none';
                 document.getElementById('gridContainer').style.display = 'flex';
                 document.getElementById('workspaceActions').style.display = 'flex';
             }
         }
-
+        
         function loadSessionToWorkspace(session) {
             const grid = document.getElementById('interactiveGrid');
             grid.innerHTML = '';
-
+            
             // Re-render based on current order in session.tiles (if reordered previously)
             // But wait, session.tiles is the source of truth for the grid. 
             // If we allow reordering, we must update session.tiles when drag ends.
-
+            
             session.tiles.forEach(tileData => {
                 const div = document.createElement('div');
                 div.className = `grid-tile ${tileData.selected ? 'is-selected' : 'is-ignored'}`;
                 div.setAttribute('data-id', tileData.id);
-
+                
                 div.innerHTML = `
                     <img src="${tileData.src}">
                     <div class="tile-badge">${tileData.badge}</div>
                 `;
-
-                div.addEventListener('click', function () {
+                
+                div.addEventListener('click', function() {
                     tileData.selected = !tileData.selected;
-
-                    if (tileData.selected) {
+                    
+                    if(tileData.selected) {
                         this.classList.remove('is-ignored');
                         this.classList.add('is-selected');
                     } else {
                         this.classList.remove('is-selected');
                         this.classList.add('is-ignored');
                     }
-                    scheduleSave();
                 });
-
+                
                 grid.appendChild(div);
             });
-
+            
             initGridSortable();
         }
-
-        // addToSelectedList removed
+        
+        // addToSelectedList removed as we use confirmSelection now
 
         function initGridSortable() {
-            const el = document.getElementById('interactiveGrid');
-            if (gridSortable) gridSortable.destroy();
+             const el = document.getElementById('interactiveGrid');
+             if(gridSortable) gridSortable.destroy();
+             
+             gridSortable = new Sortable(el, {
+                 group: {
+                     name: 'shared',
+                     pull: 'clone',
+                     put: false
+                 },
+                 animation: 200,
+                 ghostClass: 'sortable-ghost',
+                 forceFallback: true, 
+                 fallbackClass: 'sortable-drag', 
+                 fallbackOnBody: true, 
+                 swapThreshold: 0.65,
+                 delay: 0,
+                 onStart: function(evt) {
+                     document.getElementById('selectedList').classList.add('highlight-drop-zone');
+                 },
+                 onEnd: function(evt) {
+                     document.getElementById('selectedList').classList.remove('highlight-drop-zone');
+                     
+                     // Update session.tiles order based on DOM
+                     if(!activeSessionId) return;
+                     if(evt.to !== el) return; // Only handle internal sorting
 
-            gridSortable = new Sortable(el, {
-                group: {
-                    name: 'shared',
-                    pull: 'clone',
-                    put: false
-                },
-                animation: 200,
-                ghostClass: 'sortable-ghost',
-                forceFallback: true,
-                fallbackClass: 'sortable-drag',
-                fallbackOnBody: true,
-                swapThreshold: 0.65,
-                delay: 0,
-                onStart: function (evt) {
-                    document.getElementById('selectedList').classList.add('highlight-drop-zone');
-                },
-                onEnd: function (evt) {
-                    document.getElementById('selectedList').classList.remove('highlight-drop-zone');
-
-                    // Update session.tiles order based on DOM
-                    if (!activeSessionId) return;
-                    if (evt.to !== el) return; // Only handle internal sorting
-
-                    const session = sessions.find(s => s.id === activeSessionId);
-                    if (session) {
-                        const newOrderIds = Array.from(el.children).map(child => parseInt(child.getAttribute('data-id')));
-
-                        // Create a new array sorted by the DOM order
-                        const newTiles = [];
-                        newOrderIds.forEach(id => {
-                            const tile = session.tiles.find(t => t.id === id);
-                            if (tile) newTiles.push(tile);
-                        });
-                        session.tiles = newTiles;
-                    }
-                    scheduleSave();
-                }
-            });
+                     const session = sessions.find(s => s.id === activeSessionId);
+                     if(session) {
+                         const newOrderIds = Array.from(el.children).map(child => parseInt(child.getAttribute('data-id')));
+                         
+                         // Create a new array sorted by the DOM order
+                         const newTiles = [];
+                         newOrderIds.forEach(id => {
+                             const tile = session.tiles.find(t => t.id === id);
+                             if(tile) newTiles.push(tile);
+                         });
+                         session.tiles = newTiles;
+                     }
+                 }
+             });
         }
 
         function confirmSelection() {
-            if (!activeSessionId) return;
+            if(!activeSessionId) return;
             const session = sessions.find(s => s.id === activeSessionId);
-            if (!session) return;
+            if(!session) return;
 
             // Identify currently selected tiles in the grid
             const currentSelectedTiles = session.tiles.filter(t => t.selected);
-
+            
             if (currentSelectedTiles.length === 0) {
                 // Optional: Alert user or just do nothing
                 return;
@@ -2359,10 +1763,9 @@
                     badge: tile.badge
                 });
             });
-
+            
             renderSelectedList();
             updateSummary(session);
-            scheduleSave();
 
             const btn = document.querySelector('#workspaceActions button.primary');
             if (btn) {
@@ -2370,37 +1773,37 @@
                 btn.innerText = "👌 已添加";
                 setTimeout(() => btn.innerText = originalText, 1000);
             }
-
+            
             // Show Step 5 (Results)
             const stepResults = document.getElementById('step-results');
-            if (stepResults && stepResults.classList.contains('step-hidden')) {
+            if(stepResults && stepResults.classList.contains('step-hidden')) {
                 stepResults.classList.remove('step-hidden');
                 stepResults.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }
         }
-
-        // syncSelectionWithSession removed
+        
+        // Removed syncSelectionWithSession function
 
         function renderSelectedList() {
             const listEl = document.getElementById('selectedList');
             const countBadge = document.getElementById('leftCountBadge');
-
+            
             countBadge.innerText = globalSelectedList.length;
-
-            if (globalSelectedList.length === 0) {
+            
+            if(globalSelectedList.length === 0) {
                 // Added pointer-events: none to ensure the placeholder doesn't block drag-and-drop
                 listEl.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px; font-size: 0.85rem; pointer-events: none;">暂无已选<br>从右侧点选添加<br><br>可拖拽排序</div>';
             } else {
                 // Only clear if we are doing a full re-render (which we avoid on delete now)
                 listEl.innerHTML = '';
-
+                
                 globalSelectedList.forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'selected-item';
-                    div.setAttribute('data-id', item.tileId);
-                    div.setAttribute('data-instance-id', item.instanceId);
+                    div.setAttribute('data-id', item.tileId); 
+                    div.setAttribute('data-instance-id', item.instanceId); 
                     div.setAttribute('data-key', item.sessionId + '-' + item.tileId);
-
+                    
                     div.innerHTML = `
                         <div class="delete-btn" onclick="removeFromSelection('${item.instanceId}')">×</div>
                         <div class="selected-item-frame">
@@ -2411,7 +1814,7 @@
                     listEl.appendChild(div);
                 });
             }
-
+            
             initSelectedSortable();
         }
 
@@ -2431,7 +1834,7 @@
 
             // 3. Update Badge
             document.getElementById('leftCountBadge').innerText = globalSelectedList.length;
-
+            
             // 4. Handle Empty State
             if (globalSelectedList.length === 0) {
                 renderSelectedList(); // Re-render to show placeholder
@@ -2442,32 +1845,22 @@
             if (session) {
                 updateSummary(session);
             }
-
+            
             // 6. Update Badges (Sequential Numbering)
             const badges = listEl.querySelectorAll('.selected-item .tile-badge');
             badges.forEach((badge, index) => {
                 badge.innerText = `#${index + 1}`;
             });
-            scheduleSave();
         }
-
-        function clearSelectedList() {
-            if (!confirm("确定清空已选分镜吗？")) return;
-            globalSelectedList = [];
-            renderSelectedList();
-            const session = sessions.find(s => s.id === activeSessionId);
-            if (session) updateSummary(session);
-            scheduleSave();
-        }
-
+        
         function initSelectedSortable() {
             if (typeof Sortable === 'undefined') {
-                console.warn('SortableJS failed to load');
-                return;
+                 console.warn('SortableJS failed to load'); 
+                 return;
             }
             const el = document.getElementById('selectedList');
-            if (selectedListSortable) selectedListSortable.destroy();
-
+            if(selectedListSortable) selectedListSortable.destroy();
+            
             selectedListSortable = new Sortable(el, {
                 group: {
                     name: 'shared',
@@ -2480,26 +1873,26 @@
                 fallbackClass: 'sortable-drag',
                 fallbackOnBody: true,
                 dataIdAttr: 'data-instance-id', // Use instance ID for sorting
-                onAdd: function (evt) {
+                onAdd: function(evt) {
                     const itemEl = evt.item;
                     const newIndex = evt.newIndex;
                     const tileId = parseInt(itemEl.getAttribute('data-id'));
-
-                    if (isNaN(tileId) || !activeSessionId) {
+                    
+                    if(isNaN(tileId) || !activeSessionId) {
                         itemEl.remove();
                         return;
                     }
 
                     const session = sessions.find(s => s.id === activeSessionId);
-                    if (!session) {
+                    if(!session) {
                         itemEl.remove();
                         return;
                     }
-
+                    
                     const tile = session.tiles.find(t => t.id === tileId);
-                    if (!tile) {
-                        itemEl.remove();
-                        return;
+                    if(!tile) {
+                         itemEl.remove();
+                         return;
                     }
 
                     // Remove the dropped clone immediately
@@ -2513,130 +1906,268 @@
                         src: tile.src,
                         badge: tile.badge
                     };
-
+                    
                     globalSelectedList.splice(newIndex, 0, newItem);
-
+                    
                     renderSelectedList();
                     updateSummary(session);
-                    scheduleSave();
                 },
-                onEnd: function (evt) {
+                onEnd: function(evt) {
                     // Reorder based on DOM
                     const newOrderInstanceIds = Array.from(el.children).map(child => child.getAttribute('data-instance-id'));
-
+                    
                     const newGlobalList = [];
                     newOrderInstanceIds.forEach(instanceId => {
                         const item = globalSelectedList.find(i => i.instanceId === instanceId);
-                        if (item) newGlobalList.push(item);
+                        if(item) newGlobalList.push(item);
                     });
-
+                    
                     globalSelectedList = newGlobalList;
-
+                    
                     // Re-render to update numbering
                     renderSelectedList();
-                    scheduleSave();
                 }
             });
         }
 
         function resetWorkspace() {
-            if (confirm("确定要清空所有历史记录吗？")) {
-                sessions = [];
-                activeSessionId = null;
-                globalSelectedList = [];
-
-                document.getElementById('gridContainer').style.display = 'none';
-                document.getElementById('workspaceActions').style.display = 'none';
-                document.getElementById('uploadArea').style.display = 'flex';
-
-                renderSelectedList();
-                renderSessionList();
-                scheduleSave();
-            }
+             if(confirm("确定要清空所有历史记录吗？")) {
+                 sessions = [];
+                 activeSessionId = null;
+                 globalSelectedList = [];
+                 
+                 document.getElementById('gridContainer').style.display = 'none';
+                 document.getElementById('workspaceActions').style.display = 'none';
+                 document.getElementById('uploadArea').style.display = 'flex';
+                 
+                 renderSelectedList();
+                 renderSessionList();
+             }
         }
-
-        function resetToInitialView({ clearState, saveState, resetPrompts } = { clearState: false, saveState: false, resetPrompts: false }) {
-            const splitResults = document.getElementById('splitResults');
-            const stepInput = document.getElementById('step-input');
-            const stepReview = document.getElementById('step-script-review');
-            const stepWorkspace = document.getElementById('step-workspace');
-            const fullScriptInput = document.getElementById('fullScriptInput');
-            const scriptInput = document.getElementById('scriptInput');
-            const scriptListContainer = document.getElementById('scriptListContainer');
-            const sceneRefContainer = document.getElementById('sceneRefImages');
-            const scriptRefContainer = document.getElementById('scriptRefImages');
-            const sceneRefPlaceholder = document.getElementById('sceneRefPlaceholder');
-            const scriptRefPlaceholder = document.getElementById('scriptRefPlaceholder');
-
-            if (clearState) {
-                splitScriptText = '';
-                splitScenes = [];
-                currentSceneText = '';
-            }
-
-            if (fullScriptInput) {
-                fullScriptInput.value = clearState ? '' : '';
-                autoResize(fullScriptInput, 80);
-            }
-            if (scriptInput) {
-                scriptInput.value = clearState ? '' : '';
-                autoResize(scriptInput, 100);
-            }
-            if (splitResults) {
-                splitResults.style.display = 'none';
-                splitResults.innerHTML = '';
-            }
-            if (scriptListContainer) {
-                scriptListContainer.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 20px;">等待生成...</div>';
-            }
-            if (sceneRefContainer) sceneRefContainer.innerHTML = '';
-            if (scriptRefContainer) scriptRefContainer.innerHTML = '';
-            if (sceneRefPlaceholder) sceneRefPlaceholder.classList.remove('has-items');
-            if (scriptRefPlaceholder) scriptRefPlaceholder.classList.remove('has-items');
-
-            if (stepInput) stepInput.classList.add('step-hidden');
-            if (stepReview) stepReview.classList.add('step-hidden');
-            if (stepWorkspace) stepWorkspace.classList.add('step-hidden');
-
-            document.getElementById('gridContainer').style.display = 'none';
-            document.getElementById('workspaceActions').style.display = 'none';
-            document.getElementById('uploadArea').style.display = 'flex';
-
-            if (resetPrompts) {
-                promptConfig.split = promptDefaults.split;
-                promptConfig.shot = promptDefaults.shot;
-            }
-            if (saveState) scheduleSave();
-        }
-
-        function createEmptySession() {
-            activeSessionId = null;
-            renderSessionList();
-            resetToInitialView({ clearState: true, saveState: true, resetPrompts: true });
-        }
-
+        
         function exportSelectedList() {
-            if (globalSelectedList.length === 0) {
+            if(globalSelectedList.length === 0) {
                 alert("左侧已选列表为空！");
                 return;
             }
-
+            
             const zip = new JSZip();
             const folder = zip.folder("Selected_Export");
-
+            
             globalSelectedList.forEach((item, index) => {
                 const base64Data = item.src.split(',')[1];
-                const fileName = `Sequence_${String(index + 1).padStart(3, '0')}.jpg`;
-                folder.file(fileName, base64Data, { base64: true });
+                const fileName = `Sequence_${String(index+1).padStart(3, '0')}.jpg`;
+                folder.file(fileName, base64Data, {base64: true});
             });
-
-            zip.generateAsync({ type: "blob" })
-                .then(function (content) {
-                    saveAs(content, "Selected_Global.zip");
-                });
+            
+            zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                saveAs(content, "Selected_Global.zip");
+            });
         }
-        /* fillPresetScript and fillPresetSegment removed */
+/* Removed fillPresetScript and fillPresetSegment as they are replaced by prompt config */
+
+        /* ================= COLLAGE SYSTEM ================= */
+        let collageDragSrc = null;
+
+        function openCollageModal() {
+            const modal = document.getElementById('collageModal');
+            modal.classList.add('active');
+            renderCollageSourceList();
+            
+            // Determine initial grid size based on image count
+            const count = globalSelectedList.length;
+            let size = "3x3"; // Default
+            
+            if (count <= 4) size = "2x2";
+            else if (count <= 6) size = "2x3";
+            else if (count <= 9) size = "3x3";
+            else if (count <= 16) size = "4x4";
+            else size = "5x5"; // Up to 25
+            
+            document.getElementById('collageGridSelect').value = size;
+            
+            // Update grid and auto-fill images
+            updateCollageGrid(true);
+        }
+
+        function closeCollageModal() {
+            document.getElementById('collageModal').classList.remove('active');
+        }
+
+        function renderCollageSourceList() {
+            const container = document.getElementById('collageSourceList');
+            container.innerHTML = '';
+            
+            globalSelectedList.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'source-item';
+                div.draggable = true;
+                div.ondragstart = (e) => handleCollageDragStart(e, item.src);
+                div.innerHTML = `
+                    <img src="${item.src}">
+                    <div class="tile-badge" style="position:absolute; bottom:4px; left:4px;">#${index + 1}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateCollageGrid(shouldAutoFill = false) {
+            const size = document.getElementById('collageGridSelect').value;
+            const [rows, cols] = size.split('x').map(Number);
+            const container = document.getElementById('collageContainer');
+            
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            
+            // Calculate existing cells to preserve content if possible
+            const currentCells = Array.from(container.children);
+            const totalCells = rows * cols;
+            
+            container.innerHTML = '';
+            
+            for(let i=0; i<totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'collage-cell';
+                cell.draggable = true;
+                cell.ondragover = allowDrop;
+                cell.ondrop = handleCollageDrop;
+                cell.ondragstart = handleCellDragStart;
+                
+                // Try to preserve content from previous grid if resizing
+                // Only if NOT auto-filling
+                if(!shouldAutoFill && i < currentCells.length && currentCells[i].querySelector('img')) {
+                    cell.innerHTML = currentCells[i].innerHTML;
+                }
+                
+                container.appendChild(cell);
+            }
+
+            if (shouldAutoFill) {
+                const cells = Array.from(container.children);
+                // Fill cells with globalSelectedList images sequentially
+                for(let i = 0; i < cells.length && i < globalSelectedList.length; i++) {
+                    const item = globalSelectedList[i];
+                    cells[i].innerHTML = `<img src="${item.src}" style="pointer-events: none; width: 100%; height: 100%; object-fit: cover;">`;
+                }
+            }
+        }
+
+        function handleCollageDragStart(e, src) {
+            collageDragSrc = { type: 'source', src: src };
+            e.dataTransfer.effectAllowed = 'copy';
+        }
+        
+        function handleCellDragStart(e) {
+            const img = e.target.querySelector('img');
+            if(!img) {
+                e.preventDefault();
+                return;
+            }
+            collageDragSrc = { type: 'cell', src: img.src, cell: e.target };
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function handleCollageDrop(e) {
+            e.preventDefault();
+            const cell = e.target.closest('.collage-cell');
+            if(!cell || !collageDragSrc) return;
+            
+            // If dropping on itself
+            if(collageDragSrc.type === 'cell' && collageDragSrc.cell === cell) return;
+            
+            const newSrc = collageDragSrc.src;
+            
+            // If swapping cells
+            if(collageDragSrc.type === 'cell') {
+                const sourceCell = collageDragSrc.cell;
+                const targetImg = cell.querySelector('img');
+                
+                // Move target image to source cell (swap)
+                if(targetImg) {
+                    sourceCell.innerHTML = `<img src="${targetImg.src}" style="pointer-events: none; width: 100%; height: 100%; object-fit: cover;">`;
+                } else {
+                    sourceCell.innerHTML = '';
+                }
+            }
+            
+            cell.innerHTML = `<img src="${newSrc}" style="pointer-events: none; width: 100%; height: 100%; object-fit: cover;">`;
+            collageDragSrc = null;
+        }
+
+        function exportCollageImage() {
+            const container = document.getElementById('collageContainer');
+            const cells = Array.from(container.children);
+            const size = document.getElementById('collageGridSelect').value;
+            const [rows, cols] = size.split('x').map(Number);
+            
+            if(cells.every(c => !c.querySelector('img'))) {
+                alert("请先拖入图片！");
+                return;
+            }
+            
+            // Setup Canvas
+            const canvas = document.createElement('canvas');
+            const tileW = 1280; // High res base width
+            const tileH = tileW * (9/16);
+            
+            canvas.width = cols * tileW;
+            canvas.height = rows * tileH;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw Background (White)
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let loadedCount = 0;
+            const imagesToDraw = [];
+            
+            cells.forEach((cell, index) => {
+                const img = cell.querySelector('img');
+                if(img) {
+                    imagesToDraw.push({
+                        src: img.src,
+                        row: Math.floor(index / cols),
+                        col: index % cols
+                    });
+                }
+            });
+            
+            if(imagesToDraw.length === 0) return;
+            
+            // Helper to load image
+            const loadAndDraw = (item) => {
+                return new Promise((resolve) => {
+                    const image = new Image();
+                    image.crossOrigin = "anonymous"; // Try to handle potential CORS
+                    image.onload = () => {
+                        ctx.drawImage(image, item.col * tileW, item.row * tileH, tileW, tileH);
+                        resolve();
+                    };
+                    image.onerror = () => {
+                         console.warn("Failed to load image for canvas:", item.src);
+                         resolve(); // Skip but resolve
+                    };
+                    image.src = item.src;
+                });
+            };
+            
+            const btn = document.querySelector('#collageModal .primary');
+            const originalText = btn.innerText;
+            btn.innerText = "生成中...";
+            btn.disabled = true;
+            
+            Promise.all(imagesToDraw.map(loadAndDraw)).then(() => {
+                canvas.toBlob((blob) => {
+                    saveAs(blob, `Collage_${size}_${Date.now()}.png`);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
+            });
+        }
     </script>
 </body>
-
 </html>

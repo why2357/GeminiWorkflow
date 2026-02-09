@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
-import { useDraggable } from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable
+} from '@dnd-kit/sortable';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import ChatMessage from './ChatMessage';
@@ -9,43 +12,66 @@ import { generateShots, generateGrid } from '../../services/api';
 import Loading from '../common/Loading';
 import './StepSplit.css';
 
-// 可拖拽的分镜图片组件
-const DraggableImage = ({ imageUrl, index, shotInfo }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+// 可拖拽的分镜图片组件（支持在网格内重排序）
+const DraggableImage = ({ imageUrl, index, originalIndex, shotInfo, isExcluded, onToggleExclude }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+    isSorting
+  } = useSortable({
     id: `split-image-${index}`,
     data: {
       id: `split-image-${index}`,
       index,
+      originalIndex,
       src: imageUrl,
-      tileId: `split-${index}`,
-      badge: shotInfo?.angle_type || `分镜 ${index + 1}`,
-      shotNumber: shotInfo?.shot_number || index + 1
+      tileId: `split-${originalIndex}`,
+      badge: shotInfo?.angle_type || `分镜 ${originalIndex + 1}`,
+      shotNumber: shotInfo?.shot_number || originalIndex + 1
     }
   });
 
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
     opacity: isDragging ? 0.5 : 1,
-    cursor: 'grab'
+    cursor: isSorting ? 'grabbing' : 'grab'
+  };
+
+  const handleClick = () => {
+    // 如果正在拖拽，不触发点击
+    if (isDragging) return;
+    onToggleExclude(originalIndex);
   };
 
   return (
     <div
       ref={setNodeRef}
+      className={`split-image-container ${isExcluded ? 'is-grayscaled' : ''}`}
       style={{
-        aspectRatio: '1',
+        aspectRatio: '16 / 9',
         backgroundColor: 'var(--border)',
         borderRadius: 'var(--radius-xs)',
         overflow: 'hidden',
         position: 'relative',
+        filter: isExcluded ? 'grayscale(100%)' : 'grayscale(0%)',
+        opacity: isExcluded ? 0.5 : 1,
+        transition: 'all 0.2s',
         ...style
       }}
+      onClick={handleClick}
+      data-index={index}
+      data-original-index={originalIndex}
       {...attributes}
       {...listeners}
     >
       <img
         src={imageUrl}
-        alt={`分镜 ${index + 1}`}
+        alt={`分镜 ${originalIndex + 1}`}
         style={{
           width: '100%',
           height: '100%',
@@ -62,7 +88,7 @@ const DraggableImage = ({ imageUrl, index, shotInfo }) => {
         textShadow: '0 1px 2px rgba(0,0,0,0.8)',
         fontWeight: 500
       }}>
-        {index + 1}
+        {originalIndex + 1}
       </div>
     </div>
   );
@@ -76,7 +102,9 @@ const StepSplit = ({ visible = true }) => {
     setTaskId,
     setSplitScenes,
     storyboard,
-    splitsImages
+    splitsImages,
+    reorderedSplitsImages,
+    setReorderedSplitsImages
   } = useWorkflowStore();
 
   const [loading, setLoading] = useState(false);
@@ -88,6 +116,52 @@ const StepSplit = ({ visible = true }) => {
   const [refImages, setRefImages] = useState([]);
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
+  const [excludedImageIds, setExcludedImageIds] = useState(new Set()); // 跟踪被排除（变灰）的图片原始索引
+
+  // 切换图片排除状态（使用原始索引）
+  const handleToggleExclude = (originalIndex) => {
+    setExcludedImageIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(originalIndex)) {
+        newSet.delete(originalIndex);
+      } else {
+        newSet.add(originalIndex);
+      }
+      return newSet;
+    });
+  };
+
+  // 确认选择 - 将未被排除的图片添加到左侧
+  const handleConfirmSelection = () => {
+    const { addToSelectedList } = useWorkflowStore.getState();
+
+    reorderedSplitsImages.forEach(({ src, originalIndex }) => {
+      // 只添加未被排除（正常显示）的图片
+      if (!excludedImageIds.has(originalIndex)) {
+        const shotInfo = storyboard?.shots?.[originalIndex];
+        addToSelectedList({
+          instanceId: `${Date.now()}-${originalIndex}`,
+          tileId: `split-${originalIndex}`,
+          src: src,
+          badge: shotInfo ? `${shotInfo.angle_type}` : `分镜 ${originalIndex + 1}`,
+          shotNumber: shotInfo?.shot_number || originalIndex + 1
+        });
+      }
+    });
+  };
+
+  // 计算未被排除的图片数量
+  const selectedCount = reorderedSplitsImages ? reorderedSplitsImages.length - excludedImageIds.size : 0;
+
+  // 当 splitsImages 变化时，重置排除状态并同步到本地状态
+  useEffect(() => {
+    setExcludedImageIds(new Set());
+    // 将图片转换为包含原始索引的对象数组
+    setReorderedSplitsImages((splitsImages || []).map((src, originalIndex) => ({
+      src,
+      originalIndex
+    })));
+  }, [splitsImages]);
   const taskId = useWorkflowStore(state => state.taskId);
 
   // 自动调整文本框高度
@@ -195,6 +269,11 @@ const StepSplit = ({ visible = true }) => {
   // 处理参考图移除
   const handleRemoveRefImage = (id) => {
     setRefImages(prev => prev.filter(img => img.id !== id));
+  };
+
+  // 处理参考图重新排序
+  const handleReorderRefImages = (reorderedImages) => {
+    setRefImages(reorderedImages);
   };
 
   // 处理分镜描述修改
@@ -504,6 +583,7 @@ const StepSplit = ({ visible = true }) => {
                 images={refImages}
                 onAdd={handleAddRefImage}
                 onRemove={handleRemoveRefImage}
+                onReorder={handleReorderRefImages}
                 placeholder="点击或拖拽上传宫格生成参考图"
               />
               <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
@@ -515,7 +595,7 @@ const StepSplit = ({ visible = true }) => {
           )}
 
           {/* 历史任务 splits 图片展示 */}
-          {splitsImages && splitsImages.length > 0 && (
+          {reorderedSplitsImages && reorderedSplitsImages.length > 0 && (
             <div style={{
               marginTop: '16px'
             }}>
@@ -523,32 +603,47 @@ const StepSplit = ({ visible = true }) => {
                 fontSize: '0.9rem',
                 fontWeight: 600,
                 color: 'var(--text-sub)',
-                marginBottom: '8px'
+                marginBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}>
-                分镜画面 ({splitsImages.length} 张) - 可拖拽到左侧
+                <span>分镜画面 ({reorderedSplitsImages.length} 张) - 可拖拽排序或到左侧</span>
+                {selectedCount > 0 && (
+                  <Button variant="primary" size="small" onClick={handleConfirmSelection}>
+                    ✅ 确认选择 ({selectedCount})
+                  </Button>
+                )}
               </div>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(5, 1fr)',
-                gap: '8px',
-                backgroundColor: 'var(--bg-subtle)',
-                padding: '12px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border)'
-              }}>
-                {splitsImages.map((imageUrl, index) => {
-                  // 获取对应的 shot 信息
-                  const shotInfo = storyboard?.shots?.[index];
-                  return (
-                    <DraggableImage
-                      key={index}
-                      imageUrl={imageUrl}
-                      index={index}
-                      shotInfo={shotInfo}
-                    />
-                  );
-                })}
-              </div>
+              <SortableContext
+                items={reorderedSplitsImages.map((_, index) => `split-image-${index}`)}
+              >
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: '8px',
+                  backgroundColor: 'var(--bg-subtle)',
+                  padding: '12px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border)'
+                }}>
+                  {reorderedSplitsImages.map(({ src, originalIndex }, index) => {
+                    // 获取对应的 shot 信息（使用原始索引）
+                    const shotInfo = storyboard?.shots?.[originalIndex];
+                    return (
+                      <DraggableImage
+                        key={`split-image-${index}`}
+                        imageUrl={src}
+                        index={index}
+                        originalIndex={originalIndex}
+                        shotInfo={shotInfo}
+                        isExcluded={excludedImageIds.has(originalIndex)}
+                        onToggleExclude={handleToggleExclude}
+                      />
+                    );
+                  })}
+                </div>
+              </SortableContext>
             </div>
           )}
         </Card.Body>

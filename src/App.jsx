@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import AppHeader from './components/layout/AppHeader';
 import AppLayout from './components/layout/AppLayout';
 import SelectedListPanel from './components/left-sidebar/SelectedListPanel';
@@ -19,6 +20,8 @@ function App() {
   const globalSelectedList = useWorkflowStore(state => state.globalSelectedList);
   const reorderSelectedList = useWorkflowStore(state => state.reorderSelectedList);
   const addToSelectedList = useWorkflowStore(state => state.addToSelectedList);
+  const reorderedSplitsImages = useWorkflowStore(state => state.reorderedSplitsImages);
+  const setReorderedSplitsImages = useWorkflowStore(state => state.setReorderedSplitsImages);
 
   // 配置拖拽传感器
   const sensors = useSensors(
@@ -37,18 +40,35 @@ function App() {
 
     // 检查是否是外部拖拽源（来自 StepSplit 的图片）
     const isExternalSource = active.id.toString().startsWith('split-image-');
+    const isDropZone = over.id.toString() === 'selected-list-panel';
 
     if (isExternalSource) {
-      // 从 active.data.current 获取拖拽数据
-      const dragData = active.data.current;
-      if (dragData) {
-        addToSelectedList({
-          instanceId: `${Date.now()}-${dragData.id}`,
-          tileId: dragData.tileId || `split-${dragData.index}`,
-          src: dragData.src,
-          badge: dragData.badge,
-          shotNumber: dragData.shotNumber
+      // 检查是否是拖到左侧面板
+      if (isDropZone) {
+        // 从 active.data.current 获取拖拽数据
+        const dragData = active.data.current;
+        if (dragData) {
+          addToSelectedList({
+            instanceId: `${Date.now()}-${dragData.id}`,
+            tileId: dragData.tileId || `split-${dragData.index}`,
+            src: dragData.src,
+            badge: dragData.badge,
+            shotNumber: dragData.shotNumber
+          });
+        }
+      } else if (over.id.toString().startsWith('split-image-')) {
+        // 网格内重排序
+        const oldIndex = reorderedSplitsImages.findIndex((_, index) => {
+          return `split-image-${index}` === active.id.toString();
         });
+        const newIndex = reorderedSplitsImages.findIndex((_, index) => {
+          return `split-image-${index}` === over.id.toString();
+        });
+
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          const newList = arrayMove(reorderedSplitsImages, oldIndex, newIndex);
+          setReorderedSplitsImages(newList);
+        }
       }
     } else if (active.id !== over.id) {
       // 内部排序
@@ -56,10 +76,8 @@ function App() {
       const newIndex = globalSelectedList.findIndex((item) => item.instanceId === over.id);
 
       if (oldIndex >= 0 && newIndex >= 0) {
-        import('@dnd-kit/sortable').then(({ arrayMove }) => {
-          const newList = arrayMove(globalSelectedList, oldIndex, newIndex);
-          reorderSelectedList(newList);
-        });
+        const newList = arrayMove(globalSelectedList, oldIndex, newIndex);
+        reorderSelectedList(newList);
       }
     }
   };
@@ -73,13 +91,13 @@ function App() {
       // console.error('图片缓存初始化失败:', err);
     });
 
-    // 2. 启动智能缓存更新（每 5 分钟检查一次）
+    // 2. 启动智能缓存更新（每 30 秒检查一次）
     const stopUpdate = startSmartCacheUpdate(
       getHistoryMeta,
       getTaskGridImage,
       getTaskSplitImages,
       clientId,
-      5 * 60 * 1000  // 5 分钟
+      10 * 1000  // 10 秒
     );
 
     // 3. 恢复上次保存的状态

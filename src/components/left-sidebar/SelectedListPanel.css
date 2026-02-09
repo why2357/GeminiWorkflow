@@ -51,28 +51,30 @@
 
 /* 已选列表容器 */
 .selected-list {
-  padding: 12px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 /* 已选项 */
 .selected-item {
   position: relative;
   background: white;
-  border-radius: var(--radius-md);
-  overflow: visible;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  border: none;
+  border-bottom: 1px solid white;
   transition: all 0.2s ease;
+  display: block;
 }
 
 /* 拖拽区域 */
 .selected-item-drag {
   position: relative;
   cursor: grab;
-  padding: 8px;
+  padding: 0;
 }
 
 .selected-item-drag:active {
@@ -80,7 +82,7 @@
 }
 
 .selected-item:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 
 /* 序号 */
@@ -109,7 +111,7 @@
   display: block;
   object-fit: cover;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   pointer-events: none;
 }
 

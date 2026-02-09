@@ -40,6 +40,7 @@ const useWorkflowStore = create((set, get) => ({
   storyboard: null,         // API 返回的分镜脚本对象
   taskId: null,             // 当前任务 ID
   splitsImages: [],         // 历史任务的 splits 图片数据
+  reorderedSplitsImages: [], // 重排序后的 splits 图片数据 [{src, originalIndex}, ...]
 
   // ========== 参考图片 ==========
   sceneRefImages: [],       // 场景参考图片
@@ -107,6 +108,9 @@ const useWorkflowStore = create((set, get) => ({
   setSplitsImages: (images) => {
     set({ splitsImages: images });
     triggerAutoSave(get());
+  },
+  setReorderedSplitsImages: (images) => {
+    set({ reorderedSplitsImages: images });
   },
   updateScript: (index, newContent) => set((state) => {
     const updated = [...state.generatedScripts];

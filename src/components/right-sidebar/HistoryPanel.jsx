@@ -11,6 +11,8 @@ const HistoryPanel = () => {
   const [apiTasks, setApiTasks] = useState([]);
   const [thumbnailUrls, setThumbnailUrls] = useState({}); // 缓存缩略图 URL
   const [loadedTasks, setLoadedTasks] = useState(new Set()); // 已加载缩略图的任务
+  const [isPolling, setIsPolling] = useState(false); // 是否正在轮询
+  const pollingIntervalRef = useRef(null); // 轮询定时器引用
 
   const {
     sessions,
@@ -29,6 +31,46 @@ const HistoryPanel = () => {
   useEffect(() => {
     loadHistory();
   }, []);
+
+  // 轮询效果：当 isPolling 变化时启动/停止轮询
+  useEffect(() => {
+    if (isPolling) {
+      // 立即执行一次
+      loadHistory();
+      // 每 5 秒轮询一次
+      pollingIntervalRef.current = setInterval(() => {
+        loadHistory();
+      }, 5000);
+    } else {
+      // 停止轮询
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    }
+
+    // 清理函数
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [isPolling]);
+
+  // 组件卸载时清理轮询
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // 切换轮询状态
+  const togglePolling = () => {
+    setIsPolling(prev => !prev);
+  };
 
   const loadHistory = async () => {
     setLoading(true);
@@ -226,13 +268,13 @@ const HistoryPanel = () => {
             ＋
           </Button>
           <Button
-            variant="secondary"
+            variant={isPolling ? "primary" : "secondary"}
             size="small"
-            onClick={loadHistory}
-            title="刷新"
+            onClick={togglePolling}
+            title={isPolling ? "停止自动刷新" : "开启自动刷新"}
             disabled={loading}
           >
-            {loading ? '...' : '🔄'}
+            {isPolling ? '⏱️' : (loading ? '...' : '🔄')}
           </Button>
         </div>
       </div>

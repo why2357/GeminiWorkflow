@@ -60,7 +60,7 @@
   gap: 2px;
   width: 100%;
   max-width: 600px;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   background: var(--border);
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
@@ -74,18 +74,22 @@
   background-repeat: no-repeat;
   cursor: pointer;
   transition: all 0.2s;
+  aspect-ratio: 16 / 9;
+  /* 默认状态：正常显示 */
+  filter: grayscale(0%);
+  opacity: 1;
 }
 
 .tile:hover {
-  filter: brightness(1.1);
   z-index: 1;
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* 选中的图块：变灰 */
 .tile.selected {
-  outline: 3px solid var(--primary);
-  outline-offset: -3px;
+  filter: grayscale(100%);
+  opacity: 0.5;
 }
 
 /* 切片序号 */

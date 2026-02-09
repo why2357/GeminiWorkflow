@@ -209,10 +209,11 @@ const StepWorkspace = ({ visible = true }) => {
 
   // 确认选择
   const handleConfirmSelection = () => {
-    const selectedTiles = tiles.filter(t => selectedTileIds.has(t.id));
+    // 添加未被选中的图片（正常显示的）
+    const normalTiles = tiles.filter(t => !selectedTileIds.has(t.id));
 
     // 获取对应的 shot 信息
-    selectedTiles.forEach((tile) => {
+    normalTiles.forEach((tile) => {
       const shotIndex = tile.shotNumber - 1;
       const shot = storyboard?.shots?.[shotIndex];
 
@@ -267,26 +268,18 @@ const StepWorkspace = ({ visible = true }) => {
     <ChatMessage stepId="step-workspace" visible={visible}>
       <Card className="chat-bubble flex-grow">
         <Card.Header style={{ justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Card.Title>交互式工作台</Card.Title>
-            <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: 'var(--text-sub)' }}>
-              ({gridLayout.rows}×{gridLayout.cols} 网格)
-            </span>
-          </div>
+          <Card.Title>交互式工作台</Card.Title>
           <div style={{ display: 'flex', gap: '8px' }}>
             {hasSelection && (
               <Button onClick={handleConfirmSelection}>
-                ✅ 确认选择 ({selectedTileIds.size})
+                ✅ 确认选择
               </Button>
             )}
-            {gridImage && (
-              <Button variant="secondary" onClick={handleRegenerate}>
-                🔄 重新生成
+            {viewMode === 'grid' && (
+              <Button variant="secondary" onClick={() => fileInputRef.current?.click()} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                ➕ 本地导入
               </Button>
             )}
-            <Button variant="secondary" onClick={handleReupload}>
-              📂 上传图片
-            </Button>
           </div>
         </Card.Header>
         <Card.Body style={{ padding: 0, position: 'relative' }}>
@@ -347,13 +340,12 @@ const StepWorkspace = ({ visible = true }) => {
                       style={{
                         backgroundImage: `url(${tile.src})`,
                         backgroundPosition: `${xPercent}% ${yPercent}%`,
-                        backgroundSize: `${gridLayout.cols * 100}% ${gridLayout.rows * 100}%`
+                        backgroundSize: `${gridLayout.cols * 100}% ${gridLayout.rows * 100}%`,
+                        filter: selectedTileIds.has(tile.id) ? 'grayscale(100%)' : 'grayscale(0%)',
+                        opacity: selectedTileIds.has(tile.id) ? 0.5 : 1
                       }}
                     >
                       <div className="tile-number">{tile.shotNumber}</div>
-                      {selectedTileIds.has(tile.id) && (
-                        <div className="tile-check">✓</div>
-                      )}
                     </div>
                   );
                 })}

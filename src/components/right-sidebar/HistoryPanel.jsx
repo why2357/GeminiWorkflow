@@ -6,15 +6,34 @@ import Loading from '../common/Loading';
 import { imageCache } from '../../utils/imageCache';
 import './HistoryPanel.css';
 
+// localStorage key for tracking grid generation attempts
+const GRID_ATTEMPTS_KEY = 'grid_generation_attempts';
+
+// Helper functions for localStorage
+const getGridAttempts = () => {
+  try {
+    return JSON.parse(localStorage.getItem(GRID_ATTEMPTS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+};
+
+const hasGridAttempt = (taskId) => {
+  const attempts = getGridAttempts();
+  return !!attempts[taskId];
+};
+
 const HistoryPanel = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [apiTasks, setApiTasks] = useState([]);
   const [thumbnailUrls, setThumbnailUrls] = useState({}); // 缓存缩略图 URL
   const [loadedTasks, setLoadedTasks] = useState(new Set()); // 已加载缩略图的任务
+  const [retryingTasks, setRetryingTasks] = useState(new Set()); // 正在重试的任务
   const pollingIntervalRef = useRef(null); // 轮询定时器引用
   const scrollContentRef = useRef(null); // 滚动容器引用
   const scrollPositionRef = useRef(0); // 保存滚动位置
+  const isInitialLoadRef = useRef(true); // 标记是否为初始加载
 
   const {
     sessions,
@@ -54,27 +73,45 @@ const HistoryPanel = () => {
       scrollPositionRef.current = scrollContentRef.current.scrollTop;
     }
 
-    setLoading(true);
+    // 只在初始加载时显示 loading 状态，轮询更新时静默更新
+    const isInitialLoad = isInitialLoadRef.current;
+    if (isInitialLoad) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
       const response = await getHistory();
       if (response.history) {
         // 转换 API 任务数据为会话格式
-        const convertedSessions = response.history.map(task => ({
-          id: task.task_id,
-          name: task.script?.substring(0, 30) + '...' || '未命名任务',
-          thumb: null, // 缩略图按需加载
-          timestamp: new Date(task.created_at),
-          tiles: task.storyboard?.shots?.length || 0,
-          taskId: task.task_id,
-          storyboard: task.storyboard,
-          script: task.script,
-          hasGridImage: true, // 标记可能有宫格图
-          // 使用后端返回的 has_grid 和 has_splits 字段
-          hasGrid: task.has_grid ?? true,
-          hasSplits: task.has_splits ?? true
-        }));
+        const convertedSessions = response.history.map(task => {
+          const hasGrid = task.has_grid ?? true;
+          // 使用 localStorage 判断是否尝试过生成
+          const attempted = hasGridAttempt(task.task_id);
+
+          // 确定状态：pending(等待生成), success(成功), failed(失败)
+          let gridStatus = 'pending';
+          if (hasGrid) {
+            gridStatus = 'success';
+          } else if (attempted) {
+            gridStatus = 'failed';
+          }
+
+          return {
+            id: task.task_id,
+            name: task.script?.substring(0, 30) + '...' || '未命名任务',
+            thumb: null,
+            timestamp: new Date(task.created_at),
+            tiles: task.storyboard?.shots?.length || 0,
+            taskId: task.task_id,
+            storyboard: task.storyboard,
+            script: task.script,
+            hasGridImage: true,
+            hasGrid: hasGrid,
+            hasSplits: task.has_splits ?? true,
+            gridGenerationStatus: gridStatus
+          };
+        });
         setApiTasks(convertedSessions);
 
         // 恢复滚动位置
@@ -87,7 +124,11 @@ const HistoryPanel = () => {
     } catch (err) {
       setError(err.message || '加载历史记录失败');
     } finally {
-      setLoading(false);
+      // 只在初始加载结束时清除 loading 状态
+      if (isInitialLoad) {
+        setLoading(false);
+        isInitialLoadRef.current = false;
+      }
     }
   };
 
@@ -328,7 +369,21 @@ const HistoryPanel = () => {
   const handleRetryClick = async (e, session) => {
     e.stopPropagation(); // 阻止触发卡片的点击事件
 
-    // 直接复用 handleSessionClick 的逻辑，恢复任务并跳转到工作区
+    // 设置重试状态
+    setRetryingTasks(prev => new Set([...prev, session.taskId]));
+
+    // 将该任务移到列表顶部
+    setApiTasks(prev => {
+      const taskIndex = prev.findIndex(t => t.taskId === session.taskId);
+      if (taskIndex > 0) {
+        const newTasks = [...prev];
+        const [task] = newTasks.splice(taskIndex, 1);
+        return [task, ...newTasks];
+      }
+      return prev;
+    });
+
+    // 恢复任务并跳转到工作区
     setActiveSession(session.id);
 
     // 如果是 API 任务（有 taskId），恢复到工作流
@@ -346,10 +401,20 @@ const HistoryPanel = () => {
           if (task && task.storyboard && task.storyboard.shots?.length > 0) {
             storyboardToUse = task.storyboard;
           } else {
+            setRetryingTasks(prev => {
+              const newSet = new Set(prev);
+              newSet.delete(session.taskId);
+              return newSet;
+            });
             return;
           }
         } catch (err) {
           void err;
+          setRetryingTasks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(session.taskId);
+            return newSet;
+          });
           return;
         }
       }
@@ -359,6 +424,14 @@ const HistoryPanel = () => {
       setStoryboard(storyboardToUse);
       setFullScript(session.script || '');
       setCurrentStep(WorkflowSteps.SPLIT);
+
+      // 触发自动生成宫格事件
+      // 使用 setTimeout 确保状态已更新
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('autoGenerateGrid', {
+          detail: { taskId: session.taskId }
+        }));
+      }, 100);
     }
   };
 
@@ -396,6 +469,8 @@ const HistoryPanel = () => {
           <div className="session-list">
             {allSessions.map((session) => {
               const thumbUrl = session.taskId ? thumbnailUrls[session.taskId] : session.thumb;
+              // 获取宫格生成状态: pending(等待生成), success(成功), failed(失败)
+              const gridStatus = session.gridGenerationStatus || 'pending';
 
               return (
                 <div
@@ -405,23 +480,37 @@ const HistoryPanel = () => {
                 >
                   {/* 缩略图 */}
                   <div
-                    className={`session-thumb ${session.hasGrid === false ? 'session-thumb-failed' : ''}`}
+                    className={`session-thumb ${gridStatus === 'failed' ? 'session-thumb-failed' : ''} ${gridStatus === 'pending' ? 'session-thumb-pending' : ''}`}
                     ref={(el) => setThumbnailRef(el, session.taskId)}
                     data-task-id={session.taskId}
                     data-has-grid={session.hasGrid ?? true}
                   >
                     {thumbUrl ? (
                       <img src={thumbUrl} alt={session.name} />
-                    ) : session.hasGrid === false ? (
+                    ) : gridStatus === 'failed' ? (
                       <div className="session-thumb-failed-content">
-                        <span className="failed-icon">❌</span>
-                        <span className="failed-text">生成失败,请重新生成</span>
-                        {/* <button
-                          className="retry-btn"
-                          onClick={(e) => handleRetryClick(e, session)}
-                        >
-                          重新生成
-                        </button> */}
+                        {retryingTasks.has(session.taskId) ? (
+                          <>
+                            <Loading variant="dots" size="small" />
+                            <span className="failed-text" style={{ color: '#6366f1' }}>重新生成中...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="failed-icon">❌</span>
+                            <span className="failed-text">生成失败,请重新生成</span>
+                            <button
+                              className="retry-btn"
+                              onClick={(e) => handleRetryClick(e, session)}
+                            >
+                              重新生成
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ) : gridStatus === 'pending' ? (
+                      <div className="session-thumb-pending-content">
+                        <span className="pending-icon">⏳</span>
+                        <span className="pending-text">等待生成宫格</span>
                       </div>
                     ) : session.taskId ? (
                       <div className="session-thumb-placeholder">

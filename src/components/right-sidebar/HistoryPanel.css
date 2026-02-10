@@ -149,6 +149,32 @@
   transform: scale(1.05);
 }
 
+/* 等待生成状态缩略图 */
+.session-thumb-pending {
+  background: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+}
+
+.session-thumb-pending-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pending-icon {
+  font-size: 2rem;
+}
+
+.pending-text {
+  font-size: 0.85rem;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
 /* 会话信息 - 按照宫格.html样式 */
 .session-info {
   padding: 8px 12px;

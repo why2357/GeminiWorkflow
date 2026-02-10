@@ -12,6 +12,21 @@ import { imageCache } from '../utils/imageCache';
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
+ * Grid generation attempts tracking (localStorage)
+ */
+const GRID_ATTEMPTS_KEY = 'grid_generation_attempts';
+
+export const saveGridAttempt = (taskId) => {
+  try {
+    const attempts = JSON.parse(localStorage.getItem(GRID_ATTEMPTS_KEY) || '{}');
+    attempts[taskId] = { timestamp: Date.now() };
+    localStorage.setItem(GRID_ATTEMPTS_KEY, JSON.stringify(attempts));
+  } catch (e) {
+    console.warn('[api] Failed to save grid attempt:', e);
+  }
+};
+
+/**
  * 带重试的 fetch 封装
  */
 async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
@@ -143,6 +158,9 @@ export async function generateShots(script, imageFile, taskId = null) {
  */
 export async function generateGrid(storyboard, taskId, refImages = []) {
   const clientId = getOrCreateClientId();
+
+  // 标记为已尝试生成（无论成功或失败）
+  saveGridAttempt(taskId);
 
   // 构建 multipart/form-data 请求
   const formData = new FormData();

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useWorkflowStore } from '../../store/useWorkflowStore';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import Card from '../common/Card';
@@ -230,6 +230,51 @@ const StepSplit = ({ visible = true }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskId]);
 
+  // 生成宫格图
+  const handleGenerateGrid = useCallback(async () => {
+    if (!storyboard) {
+      setError('请先生成分镜脚本');
+      return;
+    }
+
+    if (!taskId) {
+      setError('缺少任务 ID');
+      return;
+    }
+
+    setGridLoading(true);
+    setError(null);
+
+    try {
+      // 创建包含编辑后分镜的 storyboard（不包含 refImages，前端单独保存）
+      const updatedStoryboard = {
+        ...storyboard,
+        reference_control_prompt: editableRefPrompt,
+        shots: editableShots.map(shot => ({
+          shot_number: shot.shotNumber,
+          angle_type: shot.angleType,
+          prompt_text: shot.promptText
+        }))
+      };
+
+      const response = await generateGrid(updatedStoryboard, taskId, []);
+
+      if (response.success) {
+        // 保存 splitsImages 到 store
+        const { setSplitsImages } = useWorkflowStore.getState();
+        if (response.split_images && response.split_images.length > 0) {
+          setSplitsImages(response.split_images);
+        }
+      } else {
+        setError(response.error || '生成宫格失败，请重试');
+      }
+    } catch (err) {
+      setError(err.message || '网络错误，请检查连接');
+    } finally {
+      setGridLoading(false);
+    }
+  }, [storyboard, taskId, editableRefPrompt, editableShots, setGridLoading, setError]);
+
   // 监听自定义事件，打开宫格展示模态框
   useEffect(() => {
     const handleOpenGridModal = () => {
@@ -242,6 +287,34 @@ const StepSplit = ({ visible = true }) => {
       window.removeEventListener('openGridModal', handleOpenGridModal);
     };
   }, []);
+
+  // 监听自动生成宫格事件
+  useEffect(() => {
+    const handleAutoGenerateGrid = async (e) => {
+      const { taskId: eventTaskId } = e.detail;
+
+      // 只在 taskId 匹配时执行
+      if (eventTaskId && eventTaskId === taskId && storyboard) {
+        console.log('🤖 [StepSplit] 收到自动生成宫格事件, taskId:', taskId);
+
+        // 延迟一下确保 UI 已更新
+        setTimeout(async () => {
+          try {
+            await handleGenerateGrid();
+          } catch (err) {
+            console.error('[StepSplit] 自动生成宫格失败:', err);
+            setError(err.message || '生成失败，请重试');
+          }
+        }, 300);
+      }
+    };
+
+    window.addEventListener('autoGenerateGrid', handleAutoGenerateGrid);
+
+    return () => {
+      window.removeEventListener('autoGenerateGrid', handleAutoGenerateGrid);
+    };
+  }, [taskId, storyboard, handleGenerateGrid]);
 
   // 切换图片排除状态（使用原始索引）
   const handleToggleExclude = (originalIndex) => {
@@ -277,24 +350,6 @@ const StepSplit = ({ visible = true }) => {
 
   // 计算未被排除的图片数量
   const selectedCount = reorderedSplitsImages ? reorderedSplitsImages.length - excludedImageIds.size : 0;
-
-  // 打开分镜编辑模态框
-  const handleOpenShotsEditModal = () => {
-    if (!storyboard) {
-      setError('请先生成分镜脚本');
-      return;
-    }
-    setShotsEditModalOpen(true);
-  };
-
-  // 打开宫格展示模态框
-  const handleOpenGridDisplayModal = () => {
-    if (!splitsImages || splitsImages.length === 0) {
-      setError('请先生成宫格图');
-      return;
-    }
-    setGridDisplayModalOpen(true);
-  };
 
   // 当 splitsImages 变化时，重置排除状态并同步到本地状态
   useEffect(() => {
@@ -507,51 +562,6 @@ const StepSplit = ({ visible = true }) => {
     prevStoryboardRef.current = storyboard;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storyboard]);
-
-  // 生成宫格图
-  const handleGenerateGrid = async () => {
-    if (!storyboard) {
-      setError('请先生成分镜脚本');
-      return;
-    }
-
-    if (!taskId) {
-      setError('缺少任务 ID');
-      return;
-    }
-
-    setGridLoading(true);
-    setError(null);
-
-    try {
-      // 创建包含编辑后分镜的 storyboard（不包含 refImages，前端单独保存）
-      const updatedStoryboard = {
-        ...storyboard,
-        reference_control_prompt: editableRefPrompt,
-        shots: editableShots.map(shot => ({
-          shot_number: shot.shotNumber,
-          angle_type: shot.angleType,
-          prompt_text: shot.promptText
-        }))
-      };
-
-      const response = await generateGrid(updatedStoryboard, taskId, []);
-
-      if (response.success) {
-        // 保存 splitsImages 到 store
-        const { setSplitsImages } = useWorkflowStore.getState();
-        if (response.split_images && response.split_images.length > 0) {
-          setSplitsImages(response.split_images);
-        }
-      } else {
-        setError(response.error || '生成宫格失败，请重试');
-      }
-    } catch (err) {
-      setError(err.message || '网络错误，请检查连接');
-    } finally {
-      setGridLoading(false);
-    }
-  };
 
   // 本地导入宫格图 - 将一张宫格图切割成25张单独的图片
   const handleLocalGridImport = (e) => {

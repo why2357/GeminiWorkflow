@@ -114,8 +114,29 @@ const StepSplit = ({ visible = true }) => {
     splitsImages,
     reorderedSplitsImages,
     setReorderedSplitsImages,
-    setSplitsImages
+    setSplitsImages,
+    taskId
   } = useWorkflowStore();
+
+  // 前端缓存每个任务的参考图（不发送到后端）
+  const refImagesCache = useRef({});
+
+  // 使用独立状态存储 refImages，不直接从 storyboard 读取
+  const [refImages, setRefImages] = useState([]);
+  const refImagesRef = useRef(refImages);
+
+  // 同步 refImages 到 ref 和 storyboard
+  useEffect(() => {
+    refImagesRef.current = refImages;
+    // 同步到 storyboard（但不触发后端保存）
+    if (storyboard && JSON.stringify(storyboard.refImages) !== JSON.stringify(refImages)) {
+      setStoryboard(prev => ({
+        ...prev,
+        refImages: refImages
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refImages]);
 
   const [loading, setLoading] = useState(false);
   const [gridLoading, setGridLoading] = useState(false);
@@ -123,15 +144,47 @@ const StepSplit = ({ visible = true }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
-  const [refImages, setRefImages] = useState([]);
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
+  const [refPromptLocked, setRefPromptLocked] = useState(false); // 参考控制提示锁定状态
   const [excludedImageIds, setExcludedImageIds] = useState(new Set());
   const gridImageInputRef = useRef(null);
 
   // 模态框状态
   const [shotsEditModalOpen, setShotsEditModalOpen] = useState(false);
   const [gridDisplayModalOpen, setGridDisplayModalOpen] = useState(false);
+
+  // 当 taskId 变化时，从 cache 恢复 refImages
+  const prevTaskIdRef = useRef(null);
+  useEffect(() => {
+    console.log('🔄 [StepSplit] taskId 变化:', {
+      prev: prevTaskIdRef.current,
+      current: taskId,
+      cacheKeys: Object.keys(refImagesCache.current)
+    });
+
+    // 只在 taskId 真正变化时执行
+    if (prevTaskIdRef.current !== taskId) {
+      // 切换任务时，先保存当前任务的 refImages 到 cache
+      if (prevTaskIdRef.current && refImagesRef.current.length > 0) {
+        console.log('💾 [StepSplit] 保存当前任务 refImages 到 cache:', prevTaskIdRef.current, refImagesRef.current.length, '张');
+        refImagesCache.current[prevTaskIdRef.current] = [...refImagesRef.current];
+      }
+
+      // 从 cache 恢复 refImages 或重置
+      if (taskId && refImagesCache.current[taskId]) {
+        const cached = refImagesCache.current[taskId];
+        console.log('📥 [StepSplit] 从 cache 恢复 refImages:', taskId, cached.length, '张');
+        setRefImages(cached);
+      } else {
+        console.log('🆕 [StepSplit] 新任务，清空 refImages');
+        setRefImages([]);
+      }
+
+      prevTaskIdRef.current = taskId;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId]);
 
   // 监听自定义事件，打开宫格展示模态框
   useEffect(() => {
@@ -208,7 +261,6 @@ const StepSplit = ({ visible = true }) => {
       originalIndex
     })));
   }, [splitsImages]);
-  const taskId = useWorkflowStore(state => state.taskId);
 
   // 自动调整文本框高度
   const handleInput = (e) => {
@@ -282,8 +334,8 @@ const StepSplit = ({ visible = true }) => {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError('图片大小不能超过 10MB');
+    if (file.size > 25 * 1024 * 1024) {
+      setError('图片大小不能超过 25MB');
       return;
     }
 
@@ -309,17 +361,46 @@ const StepSplit = ({ visible = true }) => {
 
   // 处理参考图添加
   const handleAddRefImage = (imageData) => {
-    setRefImages(prev => [...prev, imageData]);
+    console.log('➕ [StepSplit] 添加参考图:', imageData.name, imageData.id);
+    console.log('📷 [StepSplit] 当前 refImagesRef 数量:', refImagesRef.current.length);
+
+    // 直接更新 refImages 状态
+    setRefImages(prev => {
+      const newRefImages = [...prev, imageData];
+      console.log('✅ [StepSplit] 更新后的 refImages 数量:', newRefImages.length);
+
+      // 保存到 cache
+      if (taskId) {
+        refImagesCache.current[taskId] = newRefImages;
+      }
+
+      return newRefImages;
+    });
   };
 
   // 处理参考图移除
   const handleRemoveRefImage = (id) => {
-    setRefImages(prev => prev.filter(img => img.id !== id));
+    console.log('🗑️ [StepSplit] 移除参考图:', id);
+
+    setRefImages(prev => {
+      const newRefImages = prev.filter(img => img.id !== id);
+      // 保存到 cache
+      if (taskId) {
+        refImagesCache.current[taskId] = newRefImages;
+      }
+      return newRefImages;
+    });
   };
 
   // 处理参考图重新排序
   const handleReorderRefImages = (reorderedImages) => {
+    console.log('🔄 [StepSplit] 参考图重新排序，数量:', reorderedImages.length);
+
     setRefImages(reorderedImages);
+    // 保存到 cache
+    if (taskId) {
+      refImagesCache.current[taskId] = reorderedImages;
+    }
   };
 
   // 处理分镜描述修改
@@ -339,7 +420,6 @@ const StepSplit = ({ visible = true }) => {
     if (prevStoryboardRef.current && !storyboard) {
       setEditableShots([]);
       setEditableRefPrompt('');
-      setRefImages([]);
       setImageFile(null);
       setImagePreview(null);
       if (fileInputRef.current) {
@@ -353,7 +433,10 @@ const StepSplit = ({ visible = true }) => {
         angleType: shot.angle_type,
         promptText: shot.prompt_text
       })));
-      setEditableRefPrompt(storyboard.reference_control_prompt || '');
+      // 只有未锁定时才更新参考控制提示
+      if (!refPromptLocked) {
+        setEditableRefPrompt(storyboard.reference_control_prompt || '');
+      }
     }
     // 更新 ref
     prevStoryboardRef.current = storyboard;
@@ -376,22 +459,7 @@ const StepSplit = ({ visible = true }) => {
     setError(null);
 
     try {
-      // 获取参考图的 File 对象（需要从 src data URL 转换回 File）
-      const refImageFiles = refImages.map(img => {
-        // 将 base64 转换回 Blob，然后创建 File 对象
-        const arr = img.src.split(',');
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        const blob = new Blob([u8arr], { type: mime });
-        return new File([blob], img.name || `ref_image_${Date.now()}`, { type: mime });
-      });
-
-      // 创建包含编辑后分镜的 storyboard
+      // 创建包含编辑后分镜的 storyboard（不包含 refImages，前端单独保存）
       const updatedStoryboard = {
         ...storyboard,
         reference_control_prompt: editableRefPrompt,
@@ -402,7 +470,7 @@ const StepSplit = ({ visible = true }) => {
         }))
       };
 
-      const response = await generateGrid(updatedStoryboard, taskId, refImageFiles);
+      const response = await generateGrid(updatedStoryboard, taskId, []);
 
       if (response.success) {
         // 保存 splitsImages 到 store
@@ -518,7 +586,7 @@ const StepSplit = ({ visible = true }) => {
               >
                 <div className="upload-icon">📷</div>
                 <div>点击上传全景参考图</div>
-                <div className="upload-hint">支持 JPG、PNG，最大 10MB</div>
+                <div className="upload-hint">支持 JPG、PNG，最大 25MB</div>
               </div>
             )}
           </div>
@@ -657,14 +725,43 @@ const StepSplit = ({ visible = true }) => {
                   fontSize: '0.85rem',
                   fontWeight: 600,
                   color: 'var(--text-sub)',
-                  marginBottom: '6px'
+                  marginBottom: '6px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
                 }}>
-                  参考控制提示（可编辑）
+                  <span>参考控制提示（可编辑）</span>
+                  <button
+                    onClick={() => setRefPromptLocked(!refPromptLocked)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '1.1rem',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title={refPromptLocked ? '解锁参考控制提示' : '锁定参考控制提示'}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--bg-subtle)'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    {refPromptLocked ? '🔒' : '🔓'}
+                    <span style={{
+                      fontSize: '0.75rem',
+                      color: refPromptLocked ? 'var(--primary)' : 'var(--text-sub)'
+                    }}>
+                      {refPromptLocked ? '已锁定' : '锁定'}
+                    </span>
+                  </button>
                 </div>
                 <textarea
                   value={editableRefPrompt}
                   onChange={(e) => setEditableRefPrompt(e.target.value)}
                   placeholder="输入参考控制提示..."
+                  disabled={refPromptLocked}
                   style={{
                     width: '100%',
                     minHeight: '60px',
@@ -674,8 +771,10 @@ const StepSplit = ({ visible = true }) => {
                     fontSize: '0.9rem',
                     fontFamily: 'inherit',
                     resize: 'vertical',
-                    backgroundColor: 'var(--bg-subtle)',
-                    color: 'var(--text)'
+                    backgroundColor: refPromptLocked ? 'var(--bg-subtle)' : 'var(--bg)',
+                    color: 'var(--text)',
+                    opacity: refPromptLocked ? 0.7 : 1,
+                    cursor: refPromptLocked ? 'not-allowed' : 'text'
                   }}
                 />
               </div>

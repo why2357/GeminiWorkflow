@@ -19,9 +19,12 @@ const ShotsEditModal = ({ open, onClose }) => {
     setSplitScenes
   } = useWorkflowStore();
 
+  // 从 storyboard 中读取参考图
+  const refImages = storyboard?.refImages || [];
+
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
-  const [refImages, setRefImages] = useState([]);
+  const [refPromptLocked, setRefPromptLocked] = useState(false); // 参考控制提示锁定状态
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,9 +36,12 @@ const ShotsEditModal = ({ open, onClose }) => {
         angleType: shot.angle_type,
         promptText: shot.prompt_text
       })));
-      setEditableRefPrompt(storyboard.reference_control_prompt || '');
+      // 只有未锁定时才更新参考控制提示
+      if (!refPromptLocked) {
+        setEditableRefPrompt(storyboard.reference_control_prompt || '');
+      }
     }
-  }, [open, storyboard]);
+  }, [open, storyboard, refPromptLocked]);
 
   // 处理分镜描述修改
   const handleShotChange = (index, newPromptText) => {
@@ -48,17 +54,26 @@ const ShotsEditModal = ({ open, onClose }) => {
 
   // 处理参考图添加
   const handleAddRefImage = (imageData) => {
-    setRefImages(prev => [...prev, imageData]);
+    setStoryboard({
+      ...storyboard,
+      refImages: [...refImages, imageData]
+    });
   };
 
   // 处理参考图移除
   const handleRemoveRefImage = (id) => {
-    setRefImages(prev => prev.filter(img => img.id !== id));
+    setStoryboard({
+      ...storyboard,
+      refImages: refImages.filter(img => img.id !== id)
+    });
   };
 
   // 处理参考图重新排序
   const handleReorderRefImages = (reorderedImages) => {
-    setRefImages(reorderedImages);
+    setStoryboard({
+      ...storyboard,
+      refImages: reorderedImages
+    });
   };
 
   // 生成宫格图
@@ -77,21 +92,7 @@ const ShotsEditModal = ({ open, onClose }) => {
     setError(null);
 
     try {
-      // 获取参考图的 File 对象
-      const refImageFiles = refImages.map(img => {
-        const arr = img.src.split(',');
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        const blob = new Blob([u8arr], { type: mime });
-        return new File([blob], img.name || `ref_image_${Date.now()}`, { type: mime });
-      });
-
-      // 创建包含编辑后分镜的 storyboard
+      // 创建包含编辑后分镜的 storyboard（不包含 refImages，前端单独保存）
       const updatedStoryboard = {
         ...storyboard,
         reference_control_prompt: editableRefPrompt,
@@ -105,7 +106,7 @@ const ShotsEditModal = ({ open, onClose }) => {
       // 更新 store 中的 storyboard
       setStoryboard(updatedStoryboard);
 
-      const response = await generateGrid(updatedStoryboard, taskId, refImageFiles);
+      const response = await generateGrid(updatedStoryboard, taskId, []);
 
       if (response.success) {
         // 保存 splitsImages 到 store
@@ -171,13 +172,45 @@ const ShotsEditModal = ({ open, onClose }) => {
 
         {/* 参考控制提示 */}
         <div className="ref-prompt-section">
-          <div className="section-title">参考控制提示（可编辑）</div>
+          <div className="section-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>参考控制提示（可编辑）</span>
+            <button
+              onClick={() => setRefPromptLocked(!refPromptLocked)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              title={refPromptLocked ? '解锁参考控制提示' : '锁定参考控制提示'}
+              onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.05)'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            >
+              {refPromptLocked ? '🔒' : '🔓'}
+              <span style={{
+                fontSize: '0.75rem',
+                color: refPromptLocked ? 'var(--primary, #6366f1)' : 'var(--text-sub, #64748b)'
+              }}>
+                {refPromptLocked ? '已锁定' : '锁定'}
+              </span>
+            </button>
+          </div>
           <textarea
             value={editableRefPrompt}
             onChange={(e) => setEditableRefPrompt(e.target.value)}
             className="ref-prompt-textarea"
             placeholder="输入参考控制提示..."
-            style={{ minHeight: '80px' }}
+            disabled={refPromptLocked}
+            style={{
+              minHeight: '80px',
+              opacity: refPromptLocked ? 0.7 : 1,
+              cursor: refPromptLocked ? 'not-allowed' : 'text'
+            }}
           />
         </div>
 

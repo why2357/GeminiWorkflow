@@ -12,8 +12,9 @@ const HistoryPanel = () => {
   const [apiTasks, setApiTasks] = useState([]);
   const [thumbnailUrls, setThumbnailUrls] = useState({}); // 缓存缩略图 URL
   const [loadedTasks, setLoadedTasks] = useState(new Set()); // 已加载缩略图的任务
-  const [isPolling, setIsPolling] = useState(false); // 是否正在轮询
   const pollingIntervalRef = useRef(null); // 轮询定时器引用
+  const scrollContentRef = useRef(null); // 滚动容器引用
+  const scrollPositionRef = useRef(0); // 保存滚动位置
 
   const {
     sessions,
@@ -28,27 +29,15 @@ const HistoryPanel = () => {
     setSplitsImages
   } = useWorkflowStore();
 
-  // 从 API 加载历史记录
+  // 从 API 加载历史记录，并启动持续轮询
   useEffect(() => {
+    // 立即执行一次
     loadHistory();
-  }, []);
 
-  // 轮询效果：当 isPolling 变化时启动/停止轮询
-  useEffect(() => {
-    if (isPolling) {
-      // 立即执行一次
+    // 每 5 秒轮询一次
+    pollingIntervalRef.current = setInterval(() => {
       loadHistory();
-      // 每 5 秒轮询一次
-      pollingIntervalRef.current = setInterval(() => {
-        loadHistory();
-      }, 5000);
-    } else {
-      // 停止轮询
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-      }
-    }
+    }, 5000);
 
     // 清理函数
     return () => {
@@ -57,23 +46,14 @@ const HistoryPanel = () => {
         pollingIntervalRef.current = null;
       }
     };
-  }, [isPolling]);
-
-  // 组件卸载时清理轮询
-  useEffect(() => {
-    return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-      }
-    };
   }, []);
 
-  // 切换轮询状态
-  const togglePolling = () => {
-    setIsPolling(prev => !prev);
-  };
-
   const loadHistory = async () => {
+    // 保存当前滚动位置
+    if (scrollContentRef.current) {
+      scrollPositionRef.current = scrollContentRef.current.scrollTop;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -96,6 +76,13 @@ const HistoryPanel = () => {
           hasSplits: task.has_splits ?? true
         }));
         setApiTasks(convertedSessions);
+
+        // 恢复滚动位置
+        requestAnimationFrame(() => {
+          if (scrollContentRef.current) {
+            scrollContentRef.current.scrollTop = scrollPositionRef.current;
+          }
+        });
       }
     } catch (err) {
       setError(err.message || '加载历史记录失败');
@@ -337,34 +324,61 @@ const HistoryPanel = () => {
     }
   };
 
+  // 处理重新生成点击
+  const handleRetryClick = async (e, session) => {
+    e.stopPropagation(); // 阻止触发卡片的点击事件
+
+    // 直接复用 handleSessionClick 的逻辑，恢复任务并跳转到工作区
+    setActiveSession(session.id);
+
+    // 如果是 API 任务（有 taskId），恢复到工作流
+    if (session.taskId) {
+      // 检查本地数据是否完整（有 shots 和 prompt_text）
+      const isComplete = session.storyboard?.shots?.length > 0 &&
+                        session.storyboard.shots[0]?.prompt_text;
+
+      let storyboardToUse = isComplete ? session.storyboard : null;
+
+      if (!isComplete) {
+        // 本地数据不完整，从后端重新获取
+        try {
+          const task = await restoreTaskFromHistory(session.taskId);
+          if (task && task.storyboard && task.storyboard.shots?.length > 0) {
+            storyboardToUse = task.storyboard;
+          } else {
+            return;
+          }
+        } catch (err) {
+          void err;
+          return;
+        }
+      }
+
+      // 设置基本信息并跳转到 SPLIT 步骤
+      setTaskId(session.taskId);
+      setStoryboard(storyboardToUse);
+      setFullScript(session.script || '');
+      setCurrentStep(WorkflowSteps.SPLIT);
+    }
+  };
+
   return (
     <div className="history-panel">
       {/* 头部 */}
       <div className="sidebar-header">
         <span>🕘 历史记录</span>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Button
-            variant="secondary"
-            size="small"
-            onClick={resetWorkflow}
-            title="新建"
-          >
-            ＋
-          </Button>
-          <Button
-            variant={isPolling ? "primary" : "secondary"}
-            size="small"
-            onClick={togglePolling}
-            title={isPolling ? "停止自动刷新" : "开启自动刷新"}
-            disabled={loading}
-          >
-            {isPolling ? '⏱️' : (loading ? '...' : '🔄')}
-          </Button>
-        </div>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={resetWorkflow}
+          title="新建"
+        >
+          ＋
+        </Button>
       </div>
 
       {/* 内容区 */}
-      <div className="sidebar-content">
+      <div className="sidebar-content" ref={scrollContentRef}>
         {error && (
           <div style={{ padding: '10px', color: '#ef4444', fontSize: '0.85rem' }}>
             {error}
@@ -391,13 +405,24 @@ const HistoryPanel = () => {
                 >
                   {/* 缩略图 */}
                   <div
-                    className="session-thumb"
+                    className={`session-thumb ${session.hasGrid === false ? 'session-thumb-failed' : ''}`}
                     ref={(el) => setThumbnailRef(el, session.taskId)}
                     data-task-id={session.taskId}
                     data-has-grid={session.hasGrid ?? true}
                   >
                     {thumbUrl ? (
                       <img src={thumbUrl} alt={session.name} />
+                    ) : session.hasGrid === false ? (
+                      <div className="session-thumb-failed-content">
+                        <span className="failed-icon">❌</span>
+                        <span className="failed-text">生成失败,请重新生成</span>
+                        {/* <button
+                          className="retry-btn"
+                          onClick={(e) => handleRetryClick(e, session)}
+                        >
+                          重新生成
+                        </button> */}
+                      </div>
                     ) : session.taskId ? (
                       <div className="session-thumb-placeholder">
                         <Loading variant="dots" size="small" />

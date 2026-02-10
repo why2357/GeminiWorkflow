@@ -106,6 +106,49 @@
   background: #f1f5f9;
 }
 
+/* 失败状态缩略图 */
+.session-thumb-failed {
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+}
+
+.session-thumb-failed-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.failed-icon {
+  font-size: 2rem;
+}
+
+.failed-text {
+  font-size: 0.85rem;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.retry-btn {
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retry-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
 /* 会话信息 - 按照宫格.html样式 */
 .session-info {
   padding: 8px 12px;

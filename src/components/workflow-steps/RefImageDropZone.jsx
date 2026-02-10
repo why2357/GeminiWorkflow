@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -52,7 +52,13 @@ const RefImageDropZone = ({
   accept = "image/*"
 }) => {
   const fileInputRef = useRef(null);
+  const imagesRef = useRef(images);
   const [isDragging, setIsDragging] = useState(false);
+
+  // 同步最新的 images 到 ref
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -60,7 +66,46 @@ const RefImageDropZone = ({
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
-    files.forEach(processFile);
+    console.log('📁 [RefImageDropZone] 选择了文件:', files.map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type
+    })));
+    console.log('📷 [RefImageDropZone] 当前已上传图片数量:', imagesRef.current.length);
+
+    // 收集所有要上传的图片，避免重复
+    const imagesToAdd = [];
+    const currentImages = imagesRef.current;
+
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        console.warn(`⚠️ [RefImageDropZone] 跳过非图片文件:`, file.name);
+        return;
+      }
+
+      // 检查文件名是否已存在
+      const isDuplicate = currentImages.some(img => img.name === file.name);
+      if (isDuplicate) {
+        console.warn(`⚠️ [RefImageDropZone] 文件已存在，跳过:`, file.name);
+        return;
+      }
+
+      // 生成唯一 ID
+      const uniqueId = `${file.name}_${file.size}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = {
+          id: uniqueId,
+          src: e.target.result,
+          name: file.name
+        };
+        console.log('✅ [RefImageDropZone] 图片读取完成:', imageData.name, imageData.id);
+        onAdd?.(imageData);
+      };
+      reader.readAsDataURL(file);
+    });
+
     // 重置 input 以允许重复选择同一文件
     e.target.value = '';
   };
@@ -78,29 +123,43 @@ const RefImageDropZone = ({
     e.preventDefault();
     setIsDragging(false);
     const files = Array.from(e.dataTransfer.files || []);
-    files.forEach(processFile);
-  };
+    console.log('📁 [RefImageDropZone] 拖拽上传文件:', files.map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type
+    })));
+    console.log('📷 [RefImageDropZone] 当前已上传图片数量:', imagesRef.current.length);
 
-  const processFile = (file) => {
-    if (!file.type.startsWith('image/')) return;
+    const currentImages = imagesRef.current;
 
-    // 检查文件名是否已存在
-    const isDuplicate = images.some(img => img.name === file.name);
-    if (isDuplicate) {
-      console.warn(`文件 "${file.name}" 已存在，跳过上传`);
-      return;
-    }
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        console.warn(`⚠️ [RefImageDropZone] 跳过非图片文件:`, file.name);
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageData = {
-        id: Date.now() + Math.random(),
-        src: e.target.result,
-        name: file.name
+      // 检查文件名是否已存在
+      const isDuplicate = currentImages.some(img => img.name === file.name);
+      if (isDuplicate) {
+        console.warn(`⚠️ [RefImageDropZone] 文件已存在，跳过:`, file.name);
+        return;
+      }
+
+      // 生成唯一 ID
+      const uniqueId = `${file.name}_${file.size}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = {
+          id: uniqueId,
+          src: e.target.result,
+          name: file.name
+        };
+        console.log('✅ [RefImageDropZone] 图片读取完成:', imageData.name, imageData.id);
+        onAdd?.(imageData);
       };
-      onAdd?.(imageData);
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleDragEnd = (event) => {

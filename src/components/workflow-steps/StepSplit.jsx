@@ -120,6 +120,10 @@ const StepSplit = ({ visible = true }) => {
 
   // 前端缓存每个任务的参考图（不发送到后端）
   const refImagesCache = useRef({});
+  // 前端缓存每个任务的全景参考图（不发送到后端）
+  const panoramaImageCache = useRef({});
+  // 临时存储当前的全景参考图（当 taskId 为 null 时使用）
+  const pendingPanoramaImage = useRef(null);
 
   // 使用独立状态存储 refImages，不直接从 storyboard 读取
   const [refImages, setRefImages] = useState([]);
@@ -144,6 +148,15 @@ const StepSplit = ({ visible = true }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  // 使用 ref 保存最新的 imageFile 和 imagePreview，避免闭包问题
+  const imageFileRef = useRef(null);
+  const imagePreviewRef = useRef(null);
+
+  // 同步最新的 imageFile 和 imagePreview 到 ref
+  useEffect(() => {
+    imageFileRef.current = imageFile;
+    imagePreviewRef.current = imagePreview;
+  }, [imageFile, imagePreview]);
   const [editableShots, setEditableShots] = useState([]);
   const [editableRefPrompt, setEditableRefPrompt] = useState('');
   const [refPromptLocked, setRefPromptLocked] = useState(false); // 参考控制提示锁定状态
@@ -154,17 +167,19 @@ const StepSplit = ({ visible = true }) => {
   const [shotsEditModalOpen, setShotsEditModalOpen] = useState(false);
   const [gridDisplayModalOpen, setGridDisplayModalOpen] = useState(false);
 
-  // 当 taskId 变化时，从 cache 恢复 refImages
+  // 当 taskId 变化时，从 cache 恢复 refImages 和全景图
   const prevTaskIdRef = useRef(null);
   useEffect(() => {
     console.log('🔄 [StepSplit] taskId 变化:', {
       prev: prevTaskIdRef.current,
       current: taskId,
-      cacheKeys: Object.keys(refImagesCache.current)
+      refCacheKeys: Object.keys(refImagesCache.current),
+      panoramaCacheKeys: Object.keys(panoramaImageCache.current)
     });
 
     // 只在 taskId 真正变化时执行
     if (prevTaskIdRef.current !== taskId) {
+      // === 处理 refImages ===
       // 切换任务时，先保存当前任务的 refImages 到 cache
       if (prevTaskIdRef.current && refImagesRef.current.length > 0) {
         console.log('💾 [StepSplit] 保存当前任务 refImages 到 cache:', prevTaskIdRef.current, refImagesRef.current.length, '张');
@@ -179,6 +194,35 @@ const StepSplit = ({ visible = true }) => {
       } else {
         console.log('🆕 [StepSplit] 新任务，清空 refImages');
         setRefImages([]);
+      }
+
+      // === 处理全景图 ===
+      // 切换任务时，先保存当前任务的全景图到 cache
+      if (prevTaskIdRef.current && (imageFileRef.current || imagePreviewRef.current)) {
+        console.log('💾 [StepSplit] 保存当前任务全景图到 cache:', prevTaskIdRef.current);
+        panoramaImageCache.current[prevTaskIdRef.current] = {
+          imageFile: imageFileRef.current,
+          imagePreview: imagePreviewRef.current
+        };
+      }
+
+      // 当首次获得 taskId 时，将 pending 的全景图保存到 cache
+      if (taskId && !prevTaskIdRef.current && pendingPanoramaImage.current) {
+        console.log('💾 [StepSplit] 将 pending 全景图保存到 cache:', taskId);
+        panoramaImageCache.current[taskId] = pendingPanoramaImage.current;
+        pendingPanoramaImage.current = null;
+      }
+
+      // 从 cache 恢复全景图或清空
+      if (taskId && panoramaImageCache.current[taskId]) {
+        const cached = panoramaImageCache.current[taskId];
+        console.log('📥 [StepSplit] 从 cache 恢复全景图:', taskId);
+        setImageFile(cached.imageFile);
+        setImagePreview(cached.imagePreview);
+      } else {
+        console.log('🆕 [StepSplit] 新任务，清空全景图');
+        setImageFile(null);
+        setImagePreview(null);
       }
 
       prevTaskIdRef.current = taskId;
@@ -345,13 +389,33 @@ const StepSplit = ({ visible = true }) => {
     // 生成预览
     const reader = new FileReader();
     reader.onload = (e) => {
-      setImagePreview(e.target.result);
+      const preview = e.target.result;
+      setImagePreview(preview);
+
+      // 保存到缓存
+      const imageData = { imageFile: file, imagePreview: preview };
+      if (taskId) {
+        console.log('💾 [StepSplit] 保存全景图到 cache:', taskId);
+        panoramaImageCache.current[taskId] = imageData;
+      } else {
+        console.log('💾 [StepSplit] 保存全景图到 pending');
+        pendingPanoramaImage.current = imageData;
+      }
     };
     reader.readAsDataURL(file);
   };
 
   // 移除图片
   const handleRemoveImage = () => {
+    console.log('🗑️ [StepSplit] 移除全景图, taskId:', taskId);
+
+    // 从缓存中清除
+    if (taskId) {
+      delete panoramaImageCache.current[taskId];
+    } else {
+      pendingPanoramaImage.current = null;
+    }
+
     setImageFile(null);
     setImagePreview(null);
     if (fileInputRef.current) {
@@ -422,6 +486,7 @@ const StepSplit = ({ visible = true }) => {
       setEditableRefPrompt('');
       setImageFile(null);
       setImagePreview(null);
+      pendingPanoramaImage.current = null;
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
